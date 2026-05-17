@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Phase | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/pm/index.html"><span class="material-symbols-outlined">dashboard</span> PM Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Planning</div>
+        <a href="/pm/manage-phases.html" class="active"><span class="material-symbols-outlined">account_tree</span> Manage Phases</a>
+        <a href="/pm/manage-tasks.html"><span class="material-symbols-outlined">assignment</span> Manage Tasks</a>
+        <div class="sidebar-section-label" style="padding-left:0">Materials</div>
+        <a href="/pm/material-master.html"><span class="material-symbols-outlined">inventory_2</span> Material Master</a>
+        <a href="/pm/material-stock.html"><span class="material-symbols-outlined">receipt_long</span> Material Stock Entry</a>
+        <a href="/pm/material-report.html"><span class="material-symbols-outlined">description</span> Material Report</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <div>
+            <div class="topbar-title">Phase Details</div>
+            <div class="topbar-breadcrumb">PM > Manage Phases > <span>View Phase</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-avatar">PM</div>
+        </div>
+      </header>
+      <div class="dash-content">
+        <div id="viewPhaseContent">
+          <!-- Filled by JS -->
+          <div style="text-align:center; padding:50px;">Loading phase details...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../js/app.js"></script>
+</body>
+</html>
+

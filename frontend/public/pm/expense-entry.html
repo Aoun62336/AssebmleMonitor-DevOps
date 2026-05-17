@@ -1,0 +1,240 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Entry | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/pm/index.html"><span class="material-symbols-outlined">dashboard</span> PM Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Planning</div>
+        <a href="/pm/create-phase.html"><span class="material-symbols-outlined">layers</span> Create Phase</a>
+        <a href="/pm/task-management.html"><span class="material-symbols-outlined">assignment</span> Task Management</a>
+        <a href="/pm/phase-management.html"><span class="material-symbols-outlined">account_tree</span> Phase Management</a>
+        <div class="sidebar-section-label" style="padding-left:0">Materials</div>
+        <a href="/pm/material-master.html"><span class="material-symbols-outlined">inventory_2</span> Material Master</a>
+        <a href="/pm/material-stock.html"><span class="material-symbols-outlined">receipt_long</span> Material Stock Entry</a>
+        <a href="/pm/material-report.html"><span class="material-symbols-outlined">description</span> Material Report</a>
+        <div class="sidebar-section-label" style="padding-left:0">Finance</div>
+        <a href="/pm/expense-list.html"><span class="material-symbols-outlined">payments</span> Expense List</a>
+        <a href="/pm/budget-summary.html"><span class="material-symbols-outlined">account_balance</span> Budget Summary</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/pm/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media & Insights</div>
+        
+        <a href="/pm/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <a href="/pm/analytics.html"><span class="material-symbols-outlined">analytics</span> Analytics Dashboard</a>
+        <a href="/pm/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar" id="sidebarAvatar">--</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="sidebarName">Loading...</div>
+            <div class="sidebar-user-role" id="sidebarRole">--</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Expense Entry</div>
+            <div class="topbar-breadcrumb">PM &gt; <span>Expense Entry</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar" id="topbarAvatar">--</div>
+        </div>
+      </header>
+      <div class="dash-content">
+        <div class="dash-welcome animate-in">
+          <h1>Expense Entry</h1>
+          <p>Log a new project expense.</p>
+        </div>
+        <div class="panel animate-in">
+          <div class="panel-header">
+            <span class="panel-title">New Expense</span>
+          </div>
+          <div class="panel-body">
+            <form id="expenseEntryForm">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+                <div class="form-group">
+                  <label>Project</label>
+                  <select id="expenseProject" class="form-select" required>
+                    <option value="">-- Select Project --</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Phase (Optional)</label>
+                  <select id="expensePhase" class="form-select">
+                    <option value="">No specific phase</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Title / Description</label>
+                  <input type="text" id="expTitle" class="form-control" placeholder="e.g. Weekly Labour Payment" required>
+                </div>
+                <div class="form-group">
+                  <label>Amount (?)</label>
+                  <input type="number" id="expAmount" step="0.01" class="form-control" placeholder="84000" required>
+                </div>
+                <div class="form-group">
+                  <label>Category</label>
+                  <select id="expCategory" class="form-select" required>
+                    <option value="Labour Payment">Labour Payment</option>
+                    <option value="Equipment Rental">Equipment Rental</option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Materials">Materials</option>
+                    <option value="Miscellaneous">Miscellaneous</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Date</label>
+                  <input type="date" id="expDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label>Invoice Ref (Optional)</label>
+                  <input type="text" id="expInvoice" class="form-control" placeholder="INV-XXX">
+                </div>
+                <div class="form-group">
+                  <label>Vendor</label>
+                  <input type="text" id="expVendor" class="form-control" placeholder="Vendor name" required>
+                </div>
+              </div>
+              <div style="margin-top:24px">
+                <button type="submit" class="btn btn-primary"><span class="material-symbols-outlined">add_card</span> Log Expense</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        requireAuth(['project_manager', 'admin']);
+        
+        const user = getAuthUser();
+        if (user) {
+          document.getElementById('sidebarName').textContent = user.name;
+          document.getElementById('sidebarRole').textContent = user.role.replace('_', ' ').toUpperCase();
+          const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          document.getElementById('sidebarAvatar').textContent = initials;
+          document.getElementById('topbarAvatar').textContent = initials;
+        }
+
+        // Set default date
+        document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+
+        // Fetch projects
+        const projects = await apiFetch('/v1/projects');
+        const projectSelect = document.getElementById('expenseProject');
+        projects.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = p.name;
+          projectSelect.appendChild(opt);
+        });
+
+        const phaseSelect = document.getElementById('expensePhase');
+
+        // On project change, load phases
+        projectSelect.addEventListener('change', async () => {
+          const projectId = projectSelect.value;
+          phaseSelect.innerHTML = '<option value="">No specific phase</option>';
+          
+          if (!projectId) return;
+
+          try {
+            const phases = await apiFetch(`/v1/phases/project/${projectId}`);
+            phases.forEach(ph => {
+              const opt = document.createElement('option');
+              opt.value = ph.id;
+              opt.textContent = ph.name;
+              phaseSelect.appendChild(opt);
+            });
+          } catch (err) {
+            console.error('Failed to load phases', err);
+          }
+        });
+
+        // Handle Form Submit
+        const form = document.getElementById('expenseEntryForm');
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const projectId = projectSelect.value;
+          if (!projectId) {
+            showToast('Please select a project', 'error');
+            return;
+          }
+
+          const invoiceVal = document.getElementById('expInvoice').value.trim();
+          let descriptionStr = null;
+          if (invoiceVal) {
+            descriptionStr = `Invoice: ${invoiceVal}`;
+          }
+
+          const payload = {
+            title: document.getElementById('expTitle').value,
+            description: descriptionStr,
+            category: document.getElementById('expCategory').value,
+            amount: parseFloat(document.getElementById('expAmount').value),
+            currency: "INR",
+            expense_date: document.getElementById('expDate').value,
+            vendor: document.getElementById('expVendor').value,
+            project_id: projectId
+          };
+
+          const phaseId = phaseSelect.value;
+          if (phaseId) {
+            payload.phase_id = phaseId;
+          }
+
+          try {
+            await apiFetch('/v1/expenses', {
+              method: 'POST',
+              body: JSON.stringify(payload)
+            });
+            showToast('Expense logged successfully', 'success');
+            
+            // Reset form but keep project
+            document.getElementById('expTitle').value = '';
+            document.getElementById('expAmount').value = '';
+            document.getElementById('expInvoice').value = '';
+            document.getElementById('expVendor').value = '';
+            document.getElementById('expCategory').selectedIndex = 0;
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+            
+          } catch (err) {
+            showToast(err.message || 'Failed to log expense', 'danger');
+          }
+        });
+
+      } catch (err) {
+        showToast(err.message || 'Failed to initialize page', 'danger');
+      }
+    });
+  </script>
+</body>
+</html>
+

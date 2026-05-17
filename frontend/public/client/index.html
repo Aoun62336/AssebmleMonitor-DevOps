@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Dashboard | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Portfolio</div>
+      <nav class="sidebar-nav">
+        <a href="/client/index.html" class="active"><span class="material-symbols-outlined">dashboard</span> Client Dashboard</a>
+        <a href="/client/project-progress.html"><span class="material-symbols-outlined">analytics</span> Project Progress</a>
+        <a href="/client/phase-progress.html"><span class="material-symbols-outlined">step</span> Phase Progress</a>
+        <a href="/client/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <a href="/client/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt View</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">NS</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Neha Sharma</div>
+            <div class="sidebar-user-role">Client Director</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Client Dashboard</div>
+            <div class="topbar-breadcrumb">Client Portal &gt; <span>Overview</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">NS</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in"><h1>Project Overview 📊</h1><p>Performance across your investments.</p></div>
+        <div class="panel animate-in" style="margin-bottom:24px;">
+          <div class="panel-header" style="display:flex;align-items:center;justify-content:space-between;">
+            <span class="panel-title">Select Project</span>
+            <select id="clientProjectSelect" class="form-select" style="min-width:250px;">
+              <option value="">Loading projects...</option>
+            </select>
+          </div>
+        </div>
+        <div id="clientDashboardContent" style="display:none;">
+           <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="stat-card animate-in">
+                 <div class="stat-card-header"><div><div class="stat-card-label">Overall Progress</div><div class="stat-card-value" id="cdProgress">--%</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">analytics</span></div></div>
+              </div>
+              <div class="stat-card animate-in">
+                 <div class="stat-card-header"><div><div class="stat-card-label">Status</div><div class="stat-card-value"><span class="status-badge" id="cdStatus">--</span></div></div><div class="stat-card-icon"><span class="material-symbols-outlined">info</span></div></div>
+              </div>
+              <div class="stat-card animate-in">
+                 <div class="stat-card-header"><div><div class="stat-card-label">Timeline</div><div class="stat-card-value" id="cdTimeline" style="font-size:1.1rem">--</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">calendar_today</span></div></div>
+              </div>
+           </div>
+           <div>
+             <div class="panel animate-in">
+               <div class="panel-header"><span class="panel-title">Overall Progress</span></div>
+               <div class="panel-body">
+                 <div class="progress-bar-wrapper" style="margin-top:12px;margin-bottom:0">
+                   <div class="progress-label"><span id="cdBarLabel">--</span><span id="cdBarStatus">--</span></div>
+                   <div class="progress-track"><div id="cdBarFill" class="progress-fill" style="width:0%"></div></div>
+                 </div>
+               </div>
+             </div>
+           </div>
+        </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          requireAuth(['client']);
+          const user = getAuthUser();
+          if (user) {
+            const nameEl = document.querySelector('.sidebar-user-name');
+            const roleEl = document.querySelector('.sidebar-user-role');
+            const avatarEls = document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar');
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role.replace('_', ' ').toUpperCase();
+            if (avatarEls.length > 0) {
+              const initials = user.name.substring(0, 2).toUpperCase();
+              avatarEls.forEach(el => el.textContent = initials);
+            }
+          }
+
+          const projectSelect = document.getElementById('clientProjectSelect');
+          const content = document.getElementById('clientDashboardContent');
+
+          try {
+            const projects = await apiFetch('/v1/projects');
+            projectSelect.innerHTML = '<option value="">Select Project</option>';
+            projects.forEach(p => {
+              const opt = document.createElement('option');
+              opt.value = p.id;
+              opt.textContent = p.name;
+              projectSelect.appendChild(opt);
+            });
+
+            projectSelect.addEventListener('change', async (e) => {
+              const val = e.target.value;
+              if (!val) { 
+                content.style.display = 'none'; 
+                return; 
+              }
+
+              try {
+                content.style.display = 'none';
+                
+                const [overviews, budgetData] = await Promise.all([
+                  apiFetch('/v1/analytics/overview'),
+                  apiFetch(`/v1/analytics/budget?project_id=${val}`)
+                ]);
+
+                const projectOverview = overviews.find(o => String(o.project_id) === String(val));
+                if (projectOverview) {
+                  const pct = Math.round(projectOverview.progress_pct);
+                  document.getElementById("cdProgress").innerText = pct + "%";
+                  
+                  let badgeClass = "pending";
+                  let statusText = projectOverview.status || "Planning";
+                  if (statusText.toLowerCase() === 'active' || statusText.toLowerCase() === 'in progress') badgeClass = "active";
+                  if (statusText.toLowerCase() === 'completed') badgeClass = "progress";
+                  if (statusText.toLowerCase() === 'on hold' || statusText.toLowerCase() === 'delayed') badgeClass = "overdue";
+
+                  document.getElementById("cdStatus").className = "status-badge " + badgeClass;
+                  document.getElementById("cdStatus").innerText = statusText.charAt(0).toUpperCase() + statusText.slice(1);
+                  
+                  const start = formatShortDate(projectOverview.start_date);
+                  const end = formatShortDate(projectOverview.end_date);
+                  document.getElementById("cdTimeline").innerText = `${start} to ${end}`;
+                  
+                  document.getElementById("cdBarLabel").innerText = pct + "%";
+                  document.getElementById("cdBarStatus").innerText = statusText.charAt(0).toUpperCase() + statusText.slice(1);
+                  document.getElementById("cdBarFill").style.width = pct + "%";
+                  
+                  content.style.display = 'block';
+                }
+              } catch (err) {
+                console.error(err);
+                showToast('Failed to load project details', 'danger');
+              }
+            });
+          } catch (err) {
+            console.error(err);
+            showToast('Failed to load projects', 'danger');
+            projectSelect.innerHTML = '<option value="">Error loading</option>';
+          }
+        });
+        </script>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+</html>

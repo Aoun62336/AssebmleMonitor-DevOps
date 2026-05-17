@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Gallery | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="/js/app.js" defer></script>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+        <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+        <a href="/admin/project-list.html"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html"><span class="material-symbols-outlined">account_balance</span> Budget Management</a>
+        <a href="/admin/expenses.html"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+        <a href="/admin/photo-gallery.html" class="active"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">RK</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Rajesh Kumar</div>
+            <div class="sidebar-user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Photo Gallery</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>Photo Gallery</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">RK</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in">
+          <h1>Photo Gallery</h1>
+          <p>Browse site photographs across all projects.</p>
+        </div>
+        <div class="panel animate-in">
+          <div class="panel-header">
+            <span class="panel-title">Gallery</span>
+            <span class="panel-action"><a href="photo-upload.html" style="color:var(--accent)">+ Upload</a></span>
+          </div>
+          <div class="panel-body">
+            <!-- Only Project Filter remains -->
+            <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;align-items:center;">
+              <label for="galleryProjectFilter" style="font-weight:600;color:var(--text);white-space:nowrap;">Filter by Project:</label>
+              <select id="galleryProjectFilter" class="form-select" style="min-width:250px;max-width:400px;">
+                <option value="">All Projects</option>
+              </select>
+            </div>
+            
+            <div id="galleryEmptyState" style="padding:40px;text-align:center;color:var(--text-muted);">
+              Loading photos...
+            </div>
+
+            <div class="dash-grid-3" id="photoGalleryGrid" style="gap:20px; display:none;">
+              <!-- Photos rendered here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom delete photo confirmation modal -->
+        <div id="deletePhotoModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(44, 62, 80, 0.7); z-index:1000; align-items:center; justify-content:center;">
+          <div style="background:var(--card); border-radius:12px; width:90%; max-width:400px; padding:32px; text-align:center; box-shadow:var(--shadow-xl);">
+            <span class="material-symbols-outlined" style="font-size:48px;color:var(--accent);">delete</span>
+            <h3 style="margin:16px 0 8px;color:var(--primary);">Delete Photo?</h3>
+            <p style="color:var(--text-muted);margin-bottom:24px;">This action cannot be undone.</p>
+            <div style="display:flex;gap:12px;justify-content:center;">
+              <button id="cancelDeletePhoto" class="btn btn-outline">Cancel</button>
+              <button id="confirmDeletePhoto" class="btn btn-primary">Yes, Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          requireAuth(['project_manager', 'admin']);
+          
+          const user = getAuthUser();
+          if (user) {
+            const nameEl = document.querySelector('.sidebar-user-name');
+            const roleEl = document.querySelector('.sidebar-user-role');
+            const avatarEls = document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar');
+            const nameToUse = user.name || user.full_name || 'User';
+            if (nameEl) nameEl.textContent = nameToUse;
+            if (roleEl) roleEl.textContent = user.role.replace('_', ' ').toUpperCase();
+            if (avatarEls.length > 0) {
+              const initials = nameToUse.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+              avatarEls.forEach(el => el.textContent = initials);
+            }
+          }
+
+          const projectFilter = document.getElementById('galleryProjectFilter');
+          const galleryGrid = document.getElementById('photoGalleryGrid');
+          const emptyState = document.getElementById('galleryEmptyState');
+          let currentPhotos = [];
+          let pendingDeleteId = null;
+
+          const formatDate = (dateStr) => formatShortDate(dateStr);
+
+          function getBadgeColor(category) {
+            const cat = (category || '').toLowerCase();
+            if (cat === 'progress') return 'var(--info)';
+            if (cat === 'issue') return 'var(--danger)';
+            if (cat === 'completion') return 'var(--success)';
+            return 'var(--primary)';
+          }
+
+          // Custom delete modal
+          const deleteModal = document.getElementById('deletePhotoModal');
+          document.getElementById('cancelDeletePhoto').addEventListener('click', () => {
+            deleteModal.style.display = 'none';
+            pendingDeleteId = null;
+          });
+          deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) { deleteModal.style.display = 'none'; pendingDeleteId = null; }
+          });
+          document.getElementById('confirmDeletePhoto').addEventListener('click', async () => {
+            if (!pendingDeleteId) return;
+            const photoId = pendingDeleteId;
+            deleteModal.style.display = 'none';
+            pendingDeleteId = null;
+            try {
+              await apiFetch(`/v1/site-photos/${photoId}`, { method: 'DELETE' });
+              const card = document.querySelector(`.photo-card[data-id="${photoId}"]`);
+              if (card) card.remove();
+              currentPhotos = currentPhotos.filter(p => String(p.id) !== String(photoId));
+              if (currentPhotos.length === 0) {
+                emptyState.style.display = 'block';
+                emptyState.textContent = 'No photos for this project yet.';
+                galleryGrid.style.display = 'none';
+              }
+              showToast('Photo deleted successfully', 'success');
+            } catch (err) {
+              showToast(err.message || 'Failed to delete photo', 'danger');
+            }
+          });
+
+          window.deletePhoto = function(photoId) {
+            pendingDeleteId = photoId;
+            deleteModal.style.display = 'flex';
+          };
+
+          function renderPhotos() {
+            galleryGrid.innerHTML = '';
+            if (currentPhotos.length === 0) {
+              emptyState.style.display = 'block';
+              emptyState.textContent = 'No photos found for this project.';
+              galleryGrid.style.display = 'none';
+              return;
+            }
+            emptyState.style.display = 'none';
+            galleryGrid.style.display = 'grid';
+            currentPhotos.forEach(photo => {
+              const div = document.createElement('div');
+              div.className = 'photo-card panel';
+              div.dataset.id = photo.id;
+              div.style.padding = '0';
+              div.style.overflow = 'hidden';
+              div.style.position = 'relative';
+              let imgUrl = photo.file_url || '';
+              if (imgUrl.startsWith('/media')) imgUrl = API_BASE_URL.replace('/api', '') + imgUrl;
+              div.innerHTML = `
+                <div style="height:200px;background:#111;position:relative;display:flex;align-items:center;justify-content:center;">
+                  <img src="${imgUrl}" onerror="this.src='/assets/logo.png'; this.onerror=null; this.style.objectFit='contain'; this.style.padding='40px'; this.style.opacity='0.5';" style="width:100%;height:100%;object-fit:cover;display:block;">
+                  <span style="position:absolute;top:12px;left:12px;background:${getBadgeColor(photo.category)};color:#fff;padding:2px 8px;border-radius:12px;font-size:0.75rem;font-weight:bold;text-transform:uppercase;">
+                    ${photo.category || 'General'}
+                  </span>
+                  <button onclick="deletePhoto('${photo.id}')" style="position:absolute;top:12px;right:12px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'" title="Delete Photo">
+                    <span class="material-symbols-outlined" style="font-size:18px;">delete</span>
+                  </button>
+                </div>
+                <div style="padding:16px;">
+                  <p style="margin:0 0 8px 0;font-size:0.95rem;color:var(--text);">${photo.caption || 'No caption provided'}</p>
+                  <div style="display:flex;justify-content:space-between;color:var(--text-muted);font-size:0.8rem;">
+                    <span>${formatDate(photo.created_at)}</span>
+                    <span>By: ${photo.uploaded_by_name || 'Staff'}</span>
+                  </div>
+                </div>
+              `;
+              galleryGrid.appendChild(div);
+            });
+          }
+
+          async function loadAllPhotos() {
+            emptyState.style.display = 'block';
+            emptyState.textContent = 'Loading photos...';
+            galleryGrid.style.display = 'none';
+            try {
+              currentPhotos = await apiFetch('/v1/site-photos?limit=100');
+              renderPhotos();
+            } catch (err) {
+              emptyState.textContent = 'Failed to load photos.';
+              showToast('Failed to fetch photos', 'danger');
+            }
+          }
+
+          // Fetch and populate projects dropdown
+          try {
+            const projects = await apiFetch('/v1/projects');
+            projects.forEach(p => {
+              const opt = document.createElement('option');
+              opt.value = p.id;
+              opt.textContent = p.name;
+              projectFilter.appendChild(opt);
+            });
+          } catch (err) {
+            console.error('Error fetching projects', err);
+          }
+
+          // Initial load — all photos
+          loadAllPhotos();
+
+          // Handle project filter change
+          projectFilter.addEventListener('change', async () => {
+            const projectId = projectFilter.value;
+            if (!projectId) {
+              loadAllPhotos();
+              return;
+            }
+            emptyState.style.display = 'block';
+            emptyState.textContent = 'Loading photos...';
+            galleryGrid.style.display = 'none';
+            try {
+              currentPhotos = await apiFetch(`/v1/site-photos/project/${projectId}`);
+              renderPhotos();
+            } catch (err) {
+              emptyState.textContent = 'Failed to load photos.';
+              showToast('Failed to fetch photos', 'danger');
+            }
+          });
+        });
+        </script>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

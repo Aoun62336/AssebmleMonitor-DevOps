@@ -1,0 +1,8 @@
+{
+  "venvPath": "c:\\Users\\AOUN\\Desktop\\AssembleMonitor\\backend",
+  "venv": ".venv",
+  "pythonVersion": "3.12",
+  "pythonPlatform": "Windows",
+  "typeCheckingMode": "basic",
+  "extraPaths": ["."]
+}

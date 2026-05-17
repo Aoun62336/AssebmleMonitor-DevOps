@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance View | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+                <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+                <a href="/admin/project-list.html"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html" class="active"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html"><span class="material-symbols-outlined">account_balance</span> Budget Management</a>
+        <a href="/admin/expenses.html"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+                <a href="/admin/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar" id="sidebarAvatar">--</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="sidebarName">Loading...</div>
+            <div class="sidebar-user-role" id="sidebarRole">--</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Attendance View</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>Attendance View</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar" id="topbarAvatar">--</div>
+        </div>
+      </header>
+      <div class="dash-content">
+        <div class="dash-welcome animate-in">
+          <h1>Attendance View</h1>
+          <p>Monitor workforce attendance across project sites.</p>
+        </div>
+
+        <div class="panel animate-in" style="margin-bottom:24px">
+          <div class="panel-body">
+            <div class="form-group" style="margin:0">
+              <label>Select Project</label>
+              <select id="attendanceProjectSelect" class="form-select">
+                <option value="">-- Select Project --</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid" style="margin-bottom:24px">
+          <div class="stat-card animate-in">
+            <div class="stat-card-header">
+              <div><div class="stat-card-label">Total Records</div><div class="stat-card-value" id="valTotalRecords">0</div></div>
+              <div class="stat-card-icon"><span class="material-symbols-outlined">receipt_long</span></div>
+            </div>
+          </div>
+          <div class="stat-card animate-in">
+            <div class="stat-card-header">
+              <div><div class="stat-card-label">Total Hours</div><div class="stat-card-value" id="valTotalHours">0h</div></div>
+              <div class="stat-card-icon"><span class="material-symbols-outlined">schedule</span></div>
+            </div>
+          </div>
+          <div class="stat-card animate-in">
+            <div class="stat-card-header">
+              <div><div class="stat-card-label">Attendance Rate</div><div class="stat-card-value" id="valAttendanceRate">0%</div></div>
+              <div class="stat-card-icon"><span class="material-symbols-outlined">percent</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel animate-in">
+          <div class="panel-header"><span class="panel-title">Attendance Records</span></div>
+          <div class="panel-body" style="padding:0">
+            <table class="task-table" id="attendanceTable">
+              <thead>
+                <tr>
+                  <th>Engineer Name</th>
+                  <th>Date</th>
+                  <th>Check-In</th>
+                  <th>Check-Out</th>
+                  <th>Hours</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="6" style="text-align:center; padding:24px;">Select a project to view attendance</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        requireAuth(['admin']);
+        
+        const user = getAuthUser();
+        if (user) {
+          document.getElementById('sidebarName').textContent = user.name;
+          document.getElementById('sidebarRole').textContent = user.role.replace('_', ' ').toUpperCase();
+          const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          document.getElementById('sidebarAvatar').textContent = initials;
+          document.getElementById('topbarAvatar').textContent = initials;
+        }
+
+        const projects = await apiFetch('/v1/projects');
+
+
+        const projectSelect = document.getElementById('attendanceProjectSelect');
+        projects.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = p.name;
+          projectSelect.appendChild(opt);
+        });
+
+        const tbody = document.querySelector('#attendanceTable tbody');
+
+        const formatDate = (dateStr) => formatShortDate(dateStr);
+
+        const formatTime = (timeStr) => {
+          if (!timeStr) return '—';
+          return new Date(timeStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        };
+
+        const formatHours = (hoursFloat) => {
+          if (hoursFloat === null || hoursFloat === undefined) return '—';
+          const hrs = Math.floor(hoursFloat);
+          const mins = Math.round((hoursFloat - hrs) * 60);
+          return `${hrs}h ${mins > 0 ? mins + 'm' : ''}`;
+        };
+
+        projectSelect.addEventListener('change', async () => {
+          const projectId = projectSelect.value;
+          
+          if (!projectId) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px;">Select a project to view attendance</td></tr>';
+            document.getElementById('valTotalRecords').textContent = '0';
+            document.getElementById('valTotalHours').textContent = '0h';
+            document.getElementById('valAttendanceRate').textContent = '0%';
+            return;
+          }
+
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px;">Loading records...</td></tr>';
+          
+          try {
+            const records = await apiFetch(`/v1/attendance/project/${projectId}`);
+            
+            if (!records || records.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px;">No attendance records found.</td></tr>';
+              document.getElementById('valTotalRecords').textContent = '0';
+              document.getElementById('valTotalHours').textContent = '0h';
+              document.getElementById('valAttendanceRate').textContent = '0%';
+              return;
+            }
+
+            records.sort((a, b) => new Date(b.attendance_date) - new Date(a.attendance_date));
+
+            tbody.innerHTML = '';
+            let totalHoursAgg = 0;
+            let presentCount = 0;
+
+            records.forEach(record => {
+              const tr = document.createElement('tr');
+              
+              if (record.total_hours) {
+                totalHoursAgg += Number(record.total_hours);
+              }
+              
+              let statusClass = 'active';
+              let statusText = 'Present';
+              
+              if (record.status) {
+                const lowerStatus = record.status.toLowerCase();
+                if (lowerStatus === 'late') {
+                  statusClass = 'pending';
+                  statusText = 'Late';
+                } else if (lowerStatus === 'absent' || lowerStatus === 'leave') {
+                  statusClass = 'overdue';
+                  statusText = 'Absent';
+                } else if (lowerStatus === 'present') {
+                  statusClass = 'active';
+                  statusText = 'Present';
+                  presentCount++;
+                } else {
+                  statusText = record.status;
+                }
+              }
+
+              const userName = record.user_name || `Unknown (${record.user_id})`;
+
+              tr.innerHTML = `
+                <td><strong>${userName}</strong></td>
+                <td>${formatDate(record.attendance_date)}</td>
+                <td>${formatTime(record.check_in)}</td>
+                <td>${formatTime(record.check_out)}</td>
+                <td>${formatHours(record.total_hours)}</td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+              `;
+              tbody.appendChild(tr);
+            });
+
+            document.getElementById('valTotalRecords').textContent = records.length;
+            document.getElementById('valTotalHours').textContent = formatHours(totalHoursAgg);
+            
+            const rate = (presentCount / records.length * 100).toFixed(1);
+            document.getElementById('valAttendanceRate').textContent = rate + '%';
+
+          } catch (err) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:red;">Failed to load attendance</td></tr>';
+            showToast(err.message || 'Failed to load attendance', 'danger');
+          }
+        });
+
+      } catch (err) {
+        showToast(err.message || 'Failed to initialize page', 'danger');
+      }
+    });
+  </script>
+</body>
+</html>

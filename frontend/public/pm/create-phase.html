@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Phase | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/pm/index.html"><span class="material-symbols-outlined">dashboard</span> PM Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Planning</div>
+        <a href="/pm/manage-phases.html"><span class="material-symbols-outlined">account_tree</span> Manage Phases</a>
+        <a href="/pm/manage-tasks.html"><span class="material-symbols-outlined">assignment</span> Manage Tasks</a>
+        <div class="sidebar-section-label" style="padding-left:0">Materials</div>
+        <a href="/pm/material-master.html"><span class="material-symbols-outlined">inventory_2</span> Material Master</a>
+        <a href="/pm/material-stock.html"><span class="material-symbols-outlined">receipt_long</span> Material Stock Entry</a>
+        <a href="/pm/material-report.html"><span class="material-symbols-outlined">description</span> Material Report</a>
+        <div class="sidebar-section-label" style="padding-left:0">Finance</div>
+        <a href="/pm/expense-list.html"><span class="material-symbols-outlined">payments</span> Expense List</a>
+        <a href="/pm/budget-summary.html"><span class="material-symbols-outlined">account_balance</span> Budget Summary</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/pm/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media & Insights</div>
+        
+        <a href="/pm/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <a href="/pm/analytics.html"><span class="material-symbols-outlined">analytics</span> Analytics Dashboard</a>
+        <a href="/pm/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">AM</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Arjun Mehta</div>
+            <div class="sidebar-user-role">Senior PM</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Create Phase</div>
+            <div class="topbar-breadcrumb">PM &gt; <span>Create Phase</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">AM</div>
+        </div>
+      </header>
+      <div class="dash-content">
+<div class="dash-welcome animate-in"><h1>Create New Phase</h1><p>Define a new construction phase for the active project.</p></div><div class="panel animate-in"><div class="panel-header"><span class="panel-title">Phase Details</span></div><div class="panel-body"><form id="createPhaseForm"><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px"><div class="form-group"><label>Phase Name</label><input type="text" class="form-control" placeholder="e.g. Phase 5: Interior Finishing" required></div><div class="form-group"><label>Project</label><select id="phaseProject" class="form-select" required><option value="">Loading projects...</option></select></div><div class="form-group"><label>Start Date</label><input type="date" id="phaseStartDate" class="form-control" required></div><div class="form-group"><label>End Date</label><input type="date" id="phaseEndDate" class="form-control" required></div><div class="form-group" style="grid-column:1/-1"><label>Description</label><textarea class="form-control" rows="3" placeholder="Scope..."></textarea></div></div><div style="margin-top:24px"><button type="submit" class="btn btn-primary"><span class="material-symbols-outlined">layers</span> Create Phase</button></div></form></div></div>
+      </div>
+    </div>
+  </div>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!requireAuth(['admin', 'project_manager'])) return;
+
+      const user = getAuthUser();
+      if (user && user.name) {
+        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const sidebarName = document.querySelector('.sidebar-user-name');
+        if (sidebarName) sidebarName.textContent = user.name;
+        document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar').forEach(el => el.textContent = initials);
+      }
+
+      const form = document.getElementById('createPhaseForm');
+      const projectSelect = document.getElementById('phaseProject');
+      
+      if (!form || !projectSelect) return;
+
+      try {
+        const projects = await apiFetch('/v1/projects');
+        projectSelect.innerHTML = '<option value="">Select Project</option>' + 
+          projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+      } catch (err) {
+        console.error('Failed to load projects:', err);
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const btn = form.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = 'Creating...';
+        btn.disabled = true;
+
+        try {
+          const name = form.querySelector('input[type="text"]').value.trim();
+          const projectId = projectSelect.value;
+          const startDate = document.getElementById('phaseStartDate').value || null;
+          const endDate = document.getElementById('phaseEndDate').value || null;
+          const description = form.querySelector('textarea').value.trim();
+          
+          if (!name || !projectId) {
+            showToast('Phase Name and Project are required', 'danger');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+          }
+
+          const payload = {
+            project_id: projectId,
+            name,
+            description: description || null,
+            start_date: startDate,
+            end_date: endDate
+          };
+
+          await apiFetch('/v1/phases', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+
+          showToast('Phase created successfully!', 'success');
+          form.reset();
+        } catch (err) {
+          console.error('Failed to create phase:', err);
+          showToast('Error: ' + err.message, 'danger');
+        } finally {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

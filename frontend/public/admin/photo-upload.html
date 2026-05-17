@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Upload | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+                <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+        <a href="/admin/create-project.html"><span class="material-symbols-outlined">add_circle</span> Create
+          Project</a>
+        <a href="/admin/project-list.html"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html"><span class="material-symbols-outlined">account_balance</span> Budget
+          Management</a>
+        <a href="/admin/expenses.html"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+        <a href="/admin/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo
+          Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">RK</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Rajesh Kumar</div>
+            <div class="sidebar-user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span
+              class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Photo Upload</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>Photo Upload</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span
+              class="topbar-badge"></span></button>
+          <div class="topbar-avatar">RK</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in">
+          <h1>Photo Upload</h1>
+          <p>Upload site photographs for documentation and tracking.</p>
+        </div>
+        <div class="panel animate-in">
+          <div class="panel-header">
+            <span class="panel-title">Upload Photo</span>
+          </div>
+          <div class="panel-body">
+            <form id="photoUploadForm">
+              <div
+                style="border:2px dashed var(--border);border-radius:var(--radius);padding:40px;text-align:center;background:var(--bg);margin-bottom:24px;position:relative;">
+                <input type="file" id="photoFile" accept="image/jpeg,image/png"
+                  style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;" required>
+                <div id="uploadPlaceholder">
+                  <span class="material-symbols-outlined"
+                    style="font-size:48px;color:var(--accent);display:block;margin-bottom:16px">cloud_upload</span>
+                  <h3 style="color:var(--primary);margin-bottom:8px">Drag & drop photos here or click to browse</h3>
+                  <p style="color:var(--text-muted);font-size:0.875rem;">JPG, PNG up to 10MB</p>
+                </div>
+                <div id="imagePreviewContainer" style="display:none;pointer-events:none;">
+                  <img id="imagePreview" src="" alt="Preview"
+                    style="max-height:200px;max-width:100%;border-radius:var(--radius);margin-top:10px;">
+                  <p id="fileNameDisplay" style="color:var(--text-muted);margin-top:8px;font-size:0.875rem;"></p>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                <div class="form-group">
+                  <label for="photoProject">Project <span style="color:red">*</span></label>
+                  <select id="photoProject" class="form-select" required>
+                    <option value="">Select Project</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="photoPhase">Phase</label>
+                  <select id="photoPhase" class="form-select">
+                    <option value="">Select Phase (Optional)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="photoCategory">Category <span style="color:red">*</span></label>
+                  <select id="photoCategory" class="form-select" required>
+                    <option value="">Select Category</option>
+                    <option value="general">General</option>
+                    <option value="progress">Progress</option>
+                    <option value="issue">Issue</option>
+                    <option value="completion">Completion</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="photoCaption">Caption</label>
+                  <input type="text" id="photoCaption" class="form-control" placeholder="Brief description...">
+                </div>
+              </div>
+              <div style="margin-top:24px;text-align:right;">
+                <button type="submit" class="btn btn-primary" id="uploadBtn">
+                  <span class="material-symbols-outlined" style="margin-right:8px;vertical-align:middle;">upload</span>
+                  Upload Photo
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <script>
+          document.addEventListener('DOMContentLoaded', async () => {
+            requireAuth(['project_manager', 'admin']);
+
+            const user = getAuthUser();
+            if (user) {
+              const nameEl = document.querySelector('.sidebar-user-name');
+              const roleEl = document.querySelector('.sidebar-user-role');
+              const avatarEls = document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar');
+              const nameToUse = user.name || user.full_name || 'User';
+              if (nameEl) nameEl.textContent = nameToUse;
+              if (roleEl) roleEl.textContent = user.role.replace('_', ' ').toUpperCase();
+              if (avatarEls.length > 0) {
+                const initials = nameToUse.substring(0, 2).toUpperCase();
+                avatarEls.forEach(el => el.textContent = initials);
+              }
+            }
+
+            const projectSelect = document.getElementById('photoProject');
+            const phaseSelect = document.getElementById('photoPhase');
+            const fileInput = document.getElementById('photoFile');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            const imagePreview = document.getElementById('imagePreview');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const uploadForm = document.getElementById('photoUploadForm');
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            // Fetch projects
+            try {
+              const projects = await apiFetch('/v1/projects');
+              projectSelect.innerHTML = '<option value="">Select Project</option>';
+              projects.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = p.name;
+                projectSelect.appendChild(opt);
+              });
+            } catch (err) {
+              console.error('Error fetching projects', err);
+            }
+
+            // Fetch phases when project changes
+            projectSelect.addEventListener('change', async () => {
+              const projectId = projectSelect.value;
+              phaseSelect.innerHTML = '<option value="">Select Phase (Optional)</option>';
+              if (!projectId) return;
+
+              try {
+                const phases = await apiFetch(`/v1/phases/project/${projectId}`);
+                phases.forEach(ph => {
+                  const opt = document.createElement('option');
+                  opt.value = ph.id;
+                  opt.textContent = ph.name;
+                  phaseSelect.appendChild(opt);
+                });
+              } catch (err) {
+                console.error('Error fetching phases', err);
+              }
+            });
+
+            // Image Preview
+            fileInput.addEventListener('change', () => {
+              const file = fileInput.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  imagePreview.src = e.target.result;
+                  fileNameDisplay.textContent = file.name;
+                  placeholder.style.display = 'none';
+                  previewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+              } else {
+                imagePreview.src = '';
+                fileNameDisplay.textContent = '';
+                placeholder.style.display = 'block';
+                previewContainer.style.display = 'none';
+              }
+            });
+
+            // Handle Submit
+            uploadForm.addEventListener('submit', async (e) => {
+              e.preventDefault();
+
+              const file = fileInput.files[0];
+              if (!file) {
+                showToast('Please select a photo to upload', 'danger');
+                return;
+              }
+
+              const originalBtnHtml = uploadBtn.innerHTML;
+              uploadBtn.disabled = true;
+              uploadBtn.innerHTML = '<span class="material-symbols-outlined" style="margin-right:8px;vertical-align:middle;">hourglass_empty</span> Uploading...';
+
+              const formData = new FormData();
+              formData.append('project_id', projectSelect.value);
+              if (phaseSelect.value) {
+                formData.append('phase_id', phaseSelect.value);
+              }
+              formData.append('category', document.getElementById('photoCategory').value);
+              formData.append('caption', document.getElementById('photoCaption').value || '');
+              formData.append('file', file);
+
+              const token = getAuthToken();
+
+              try {
+                const res = await fetch(`${API_BASE_URL}/v1/site-photos/upload`, {
+                  method: 'POST',
+                  headers: { 'Authorization': 'Bearer ' + token },
+                  body: formData
+                });
+
+                if (res.status === 201 || res.status === 200) {
+                  showToast('Photo uploaded successfully', 'success');
+                  uploadForm.reset();
+                  imagePreview.src = '';
+                  fileNameDisplay.textContent = '';
+                  placeholder.style.display = 'block';
+                  previewContainer.style.display = 'none';
+                  phaseSelect.innerHTML = '<option value="">Select Phase (Optional)</option>';
+                } else {
+                  const errorData = await res.json().catch(() => ({}));
+                  showToast(errorData.detail || 'Upload failed', 'danger');
+                }
+              } catch (err) {
+                console.error('Upload error:', err);
+                showToast('Failed to upload photo', 'danger');
+              } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = originalBtnHtml;
+              }
+            });
+          });
+        </script>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Material Usage | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="/js/app.js" defer></script>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/se/index.html"><span class="material-symbols-outlined">dashboard</span> Engineer Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Field Work</div>
+        <a href="/se/my-tasks.html"><span class="material-symbols-outlined">assignment</span> My Tasks</a>
+        <a href="/se/material-usage.html" class="active"><span class="material-symbols-outlined">inventory_2</span> Material Usage</a>
+        <div class="sidebar-section-label" style="padding-left:0">Attendance</div>
+        <a href="/se/check-in.html"><span class="material-symbols-outlined">login</span> Check-in / Check-out</a>
+        <a href="/se/attendance-history.html"><span class="material-symbols-outlined">schedule</span> Attendance History</a>
+        <div class="sidebar-section-label" style="padding-left:0">Reports</div>
+        <a href="/se/performance.html"><span class="material-symbols-outlined">trending_up</span> Performance Progress</a>
+        <a href="/se/gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar" id="sidebarAvatar">--</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="sidebarName">Loading...</div>
+            <div class="sidebar-user-role" id="sidebarRole">--</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Material Usage</div>
+            <div class="topbar-breadcrumb">SE &gt; <span>Material Usage</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar" id="topbarAvatar">--</div>
+        </div>
+      </header>
+      <div class="dash-content">
+        <div class="dash-welcome animate-in">
+          <h1>Material Usage</h1>
+          <p>Log materials used on site.</p>
+        </div>
+
+        <div class="panel animate-in" style="margin-bottom:24px">
+          <div class="panel-body">
+            <div class="form-group" style="margin:0">
+              <label>Select Project</label>
+              <select id="usageProjectSelect" class="form-select">
+                <option value="">-- Select Project --</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel animate-in">
+          <div class="panel-header">
+            <span class="panel-title">Log Usage</span>
+          </div>
+          <div class="panel-body">
+            <form id="materialUsageForm">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+                <div class="form-group">
+                  <label>Material <span style="color:var(--danger)">*</span></label>
+                  <select id="usageMaterial" class="form-select" required>
+                    <option value="">-- Select Project First --</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Quantity <span style="color:var(--danger)">*</span></label>
+                  <input type="number" id="usageQuantity" class="form-control" placeholder="Enter numeric quantity" min="0.01" step="0.01" required>
+                </div>
+                <div class="form-group">
+                  <label>Usage Date <span style="color:var(--danger)">*</span></label>
+                  <input type="date" id="usageDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label>Assigned Task <span style="color:var(--danger)">*</span></label>
+                  <select id="usageTask" class="form-select" required>
+                    <option value="">-- Select Project First --</option>
+                  </select>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                  <label>Notes</label>
+                  <input type="text" id="usageNotes" class="form-control" placeholder="Optional notes...">
+                </div>
+              </div>
+              <div style="margin-top:24px">
+                <button type="submit" class="btn btn-primary">
+                  <span class="material-symbols-outlined">inventory_2</span> Log Material Used
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        requireAuth(['site_engineer', 'project_manager', 'admin']);
+        
+        const user = getAuthUser();
+        if (user) {
+          document.getElementById('sidebarName').textContent = user.name;
+          document.getElementById('sidebarRole').textContent = user.role.replace('_', ' ').toUpperCase();
+          const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          document.getElementById('sidebarAvatar').textContent = initials;
+          document.getElementById('topbarAvatar').textContent = initials;
+        }
+
+        // Set default date to today
+        document.getElementById('usageDate').value = new Date().toISOString().split('T')[0];
+
+        // Fetch projects
+        const projects = await apiFetch('/v1/projects');
+        const projectSelect = document.getElementById('usageProjectSelect');
+        projects.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = p.name;
+          projectSelect.appendChild(opt);
+        });
+
+        const materialSelect = document.getElementById('usageMaterial');
+        const taskSelect = document.getElementById('usageTask');
+
+        const loadProjectData = async () => {
+          const projectId = projectSelect.value;
+          
+          if (!projectId) {
+            materialSelect.innerHTML = '<option value="">-- Select Project First --</option>';
+            taskSelect.innerHTML = '<option value="">-- Select Task --</option>';
+            return;
+          }
+
+          materialSelect.innerHTML = '<option value="">Loading materials...</option>';
+          taskSelect.innerHTML = '<option value="">Loading tasks...</option>';
+          
+          try {
+            // Load Materials
+            const materials = await apiFetch(`/v1/materials/project/${projectId}`);
+            materialSelect.innerHTML = '<option value="">-- Select Material --</option>';
+            materials.forEach(mat => {
+              const opt = document.createElement('option');
+              opt.value = mat.id;
+              opt.textContent = `${mat.name} (Stock: ${Number(mat.remaining_stock).toFixed(2)}, Req: ${Number(mat.total_required_qty || 0).toFixed(2)} ${mat.unit})`;
+              materialSelect.appendChild(opt);
+            });
+
+            // Load user's assigned tasks for this project
+            taskSelect.innerHTML = '<option value="">-- Select Task --</option>';
+            try {
+              const allTasks = await apiFetch(`/v1/tasks/assigned?project_id=${projectId}`);
+              if (!allTasks || allTasks.length === 0) {
+                taskSelect.innerHTML = '<option value="">-- No tasks assigned to you for this project --</option>';
+              } else {
+                allTasks.forEach(t => {
+                  const opt = document.createElement('option');
+                  opt.value = t.id;
+                  const phaseName = t.phase_name || '';
+                  opt.textContent = `${t.name}${phaseName ? ' [' + phaseName + ']' : ''}`;
+                  taskSelect.appendChild(opt);
+                });
+              }
+            } catch (err) {
+              console.error('Failed to load assigned tasks:', err);
+              taskSelect.innerHTML = '<option value="">-- Failed to load tasks --</option>';
+            }
+          } catch (err) {
+            materialSelect.innerHTML = '<option value="">-- Failed to load data --</option>';
+            taskSelect.innerHTML = '<option value="">-- Failed to load data --</option>';
+            showToast(err.message || 'Failed to load project data', 'danger');
+          }
+        };
+
+        const reloadMaterials = async () => {
+          const projectId = projectSelect.value;
+          if (!projectId) return;
+          try {
+            const materials = await apiFetch(`/v1/materials/project/${projectId}`);
+            const currentVal = materialSelect.value;
+            materialSelect.innerHTML = '<option value="">-- Select Material --</option>';
+            materials.forEach(mat => {
+              const opt = document.createElement('option');
+              opt.value = mat.id;
+              opt.textContent = `${mat.name} (Available: ${Number(mat.remaining_stock).toFixed(2)} ${mat.unit})`;
+              materialSelect.appendChild(opt);
+            });
+            materialSelect.value = currentVal;
+          } catch (e) {
+            console.error('Failed to reload materials', e);
+          }
+        };
+
+        projectSelect.addEventListener('change', loadProjectData);
+
+        // Form Submission
+        const form = document.getElementById('materialUsageForm');
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const materialId = materialSelect.value;
+          if (!materialId) {
+            showToast('Please select a material', 'danger');
+            return;
+          }
+
+          const taskId = taskSelect.value;
+          if (!taskId) {
+            showToast('Assigned Task is required before submission', 'danger');
+            return;
+          }
+
+          const payload = {
+            material_id: materialId,
+            quantity_used: parseFloat(document.getElementById('usageQuantity').value),
+            usage_date: document.getElementById('usageDate').value,
+            notes: document.getElementById('usageNotes').value || null,
+            task_id: taskId
+          };
+
+          try {
+            await apiFetch('/v1/material-usage', {
+              method: 'POST',
+              body: JSON.stringify(payload)
+            });
+            showToast('Usage logged successfully', 'success');
+            
+            // Reset form but keep the project and date
+            document.getElementById('usageQuantity').value = '';
+            document.getElementById('usageNotes').value = '';
+            materialSelect.value = '';
+            taskSelect.value = '';
+            
+            // Refetch materials to show updated stock
+            reloadMaterials();
+          } catch (err) {
+            showToast(err.message || 'Failed to log usage', 'danger');
+          }
+        });
+
+      } catch (err) {
+        showToast(err.message || 'Failed to initialize page', 'danger');
+      }
+    });
+  </script>
+</body>
+</html>

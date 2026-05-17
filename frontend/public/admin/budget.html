@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget Management | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+        <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+        <a href="/admin/project-list.html"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html" class="active"><span class="material-symbols-outlined">account_balance</span> Budget Management</a>
+        <a href="/admin/expenses.html"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+        <a href="/admin/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">RK</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Rajesh Kumar</div>
+            <div class="sidebar-user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Budget Management</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>Budget Management</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">RK</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in">
+          <h1>Budget Management</h1>
+          <p>Review and track budget allocations across all projects.</p>
+        </div>
+
+        <div class="panel animate-in" style="margin-bottom: 20px;">
+          <div class="panel-body" style="display:flex; align-items:center; gap:16px;">
+            <label for="adminProjectSelect" style="font-weight:600; color:var(--text);">Select Project:</label>
+            <select id="adminProjectSelect" class="form-select" style="min-width:300px;">
+              <option value="">Loading projects...</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="budgetEmptyState" style="padding:40px;text-align:center;color:var(--text-muted);">
+          Select a project to view budget details.
+        </div>
+
+        <!-- Only Total Budget + Remaining Budget cards -->
+        <div id="budgetContent" style="display:none;">
+          <div class="stats-grid" style="margin-bottom:24px; grid-template-columns: repeat(2, 1fr);">
+            <div class="stat-card animate-in">
+              <div class="stat-card-header">
+                <div><div class="stat-card-label">Total Budget</div><div class="stat-card-value" id="valTotalBudget">₹0</div></div>
+                <div class="stat-card-icon"><span class="material-symbols-outlined">account_balance</span></div>
+              </div>
+              <div class="stat-card-change" id="budgetChangeLabel">—</div>
+            </div>
+            <div class="stat-card animate-in">
+              <div class="stat-card-header">
+                <div><div class="stat-card-label">Remaining Budget</div><div class="stat-card-value" id="valRemaining">₹0</div></div>
+                <div class="stat-card-icon"><span class="material-symbols-outlined">savings</span></div>
+              </div>
+              <div class="stat-card-change" id="remainingChangeLabel">—</div>
+            </div>
+          </div>
+
+          <!-- Budget Utilization -->
+          <div class="panel animate-in" style="margin-bottom: 24px;">
+            <div class="panel-header"><span class="panel-title">Budget Utilization</span></div>
+            <div class="panel-body">
+              <div class="progress-bar-wrapper" style="margin-bottom:0">
+                <div class="progress-label"><span id="lblSpent">₹0 spent</span><span id="lblPct">0%</span></div>
+                <div class="progress-track"><div id="barUtilization" class="progress-fill blue" style="width:0%;transition:width 0.8s ease;"></div></div>
+              </div>
+              <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div style="padding:12px;background:var(--bg,#f8f9fa);border-radius:8px;border:1px solid var(--border);">
+                  <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Total Expenses</div>
+                  <div style="font-size:16px;font-weight:700;" id="valTotalExpenses">₹0</div>
+                </div>
+                <div style="padding:12px;background:var(--bg,#f8f9fa);border-radius:8px;border:1px solid var(--border);">
+                  <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Material Cost</div>
+                  <div style="font-size:16px;font-weight:700;" id="valMaterialCost">₹0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Global Project Budget Status -->
+        <div class="panel animate-in">
+          <div class="panel-header"><span class="panel-title">Global Project Budget Status</span></div>
+          <div class="panel-body" id="globalBudgetList">
+            <div style="text-align:center;padding:20px;color:var(--text-muted);">Loading global overview...</div>
+          </div>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          requireAuth(['admin']);
+          const user = getAuthUser();
+          if (user) {
+            const nameEl = document.querySelector('.sidebar-user-name');
+            const roleEl = document.querySelector('.sidebar-user-role');
+            const avatarEls = document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar');
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role.replace('_', ' ').toUpperCase();
+            if (avatarEls.length > 0) {
+              const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+              avatarEls.forEach(el => el.textContent = initials);
+            }
+          }
+
+          const projectSelect = document.getElementById('adminProjectSelect');
+          const content = document.getElementById('budgetContent');
+          const emptyState = document.getElementById('budgetEmptyState');
+          const globalList = document.getElementById('globalBudgetList');
+
+          // Load global analytics for budget list
+          try {
+            const overviews = await apiFetch('/v1/analytics/overview');
+            if (overviews && overviews.length > 0) {
+              globalList.innerHTML = overviews.map(o => {
+                const budget = o.budget || 0;
+                const bPct = Math.round(o.budget_used_pct || 0);
+                const fillClass = bPct > 90 ? 'red' : (bPct > 70 ? 'orange' : 'green');
+                const budgetLabel = budget >= 10000000
+                  ? `₹${(budget/10000000).toFixed(2)} Cr`
+                  : `₹${Number(budget).toLocaleString('en-IN')}`;
+                return `
+                  <div class="progress-bar-wrapper" style="margin-bottom:20px;">
+                    <div class="progress-label">
+                      <span style="font-weight:600;">${o.project_name}</span>
+                      <span style="font-weight:700;">${bPct}% spent</span>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill ${fillClass}" style="width:${bPct}%;transition:width 0.8s ease;"></div></div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Total Budget: ${budgetLabel}</div>
+                  </div>
+                `;
+              }).join('');
+            } else {
+              globalList.innerHTML = '<div style="text-align:center;color:var(--text-muted)">No project data found.</div>';
+            }
+          } catch(err) {
+            console.error('Failed global overview:', err);
+            globalList.innerHTML = '<div style="text-align:center;color:var(--danger)">Failed to load global budget data.</div>';
+          }
+
+          // Load projects dropdown
+          try {
+            const projects = await apiFetch('/v1/projects');
+            projectSelect.innerHTML = '<option value="">Select a Project</option>';
+            projects.forEach(p => {
+              const opt = document.createElement('option');
+              opt.value = p.id;
+              opt.textContent = p.name;
+              projectSelect.appendChild(opt);
+            });
+
+            projectSelect.addEventListener('change', async (e) => {
+              if (e.target.value) {
+                await loadProjectBudget(e.target.value);
+              } else {
+                content.style.display = 'none';
+                emptyState.style.display = 'block';
+                emptyState.textContent = 'Select a project to view budget details.';
+              }
+            });
+          } catch (err) {
+            console.error(err);
+            showToast('Failed to load projects', 'danger');
+            projectSelect.innerHTML = '<option value="">Error loading</option>';
+          }
+
+          async function loadProjectBudget(projectId) {
+            content.style.display = 'none';
+            emptyState.style.display = 'block';
+            emptyState.textContent = 'Loading budget details...';
+            try {
+              const summary = await apiFetch(`/v1/expenses/summary/project/${projectId}`);
+              
+              const totalB = summary.total_budget || 0;
+              const expenses = summary.total_expenses || 0;
+              const materials = summary.total_material_cost || 0;
+              const spent = summary.total_spent || 0;
+              const remaining = summary.remaining_budget ?? (totalB - spent);
+
+              document.getElementById('valTotalBudget').textContent = '₹' + totalB.toLocaleString('en-IN');
+              const remDisplay = remaining < 0
+                ? '-₹' + Math.abs(remaining).toLocaleString('en-IN')
+                : '₹' + remaining.toLocaleString('en-IN');
+              const remEl = document.getElementById('valRemaining');
+              remEl.textContent = remDisplay;
+              remEl.style.color = remaining < 0 ? 'var(--danger)' : 'var(--success)';
+              document.getElementById('valTotalExpenses').textContent = '₹' + expenses.toLocaleString('en-IN');
+              document.getElementById('valMaterialCost').textContent = '₹' + materials.toLocaleString('en-IN');
+
+              const pct = totalB > 0 ? Math.min(100, Math.round((spent / totalB) * 100)) : 0;
+              document.getElementById('lblSpent').textContent = '₹' + spent.toLocaleString('en-IN') + ' spent';
+              document.getElementById('lblPct').textContent = pct + '%';
+
+              const bar = document.getElementById('barUtilization');
+              bar.style.width = pct + '%';
+              bar.className = 'progress-fill ' + (pct > 90 ? 'red' : pct > 70 ? 'orange' : 'blue');
+
+              document.getElementById('budgetChangeLabel').innerHTML = `<span class="material-symbols-outlined" style="font-size:14px">info</span> ${pct}% utilized`;
+              document.getElementById('remainingChangeLabel').innerHTML = remaining < 0
+                ? `<span class="material-symbols-outlined" style="font-size:14px;color:var(--danger)">warning</span> Budget exceeded by ₹${Math.abs(remaining).toLocaleString('en-IN')}`
+                : `<span class="material-symbols-outlined" style="font-size:14px">check_circle</span> ₹${remaining.toLocaleString('en-IN')} available`;
+
+              emptyState.style.display = 'none';
+              content.style.display = 'block';
+            } catch (err) {
+              console.error(err);
+              showToast('Failed to load project budget', 'danger');
+              emptyState.textContent = 'Error loading budget details.';
+            }
+          }
+        });
+        </script>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+</html>

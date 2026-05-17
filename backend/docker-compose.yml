@@ -1,0 +1,85 @@
+version: "3.9"
+
+# ============================================================
+# AssembleMonitor — Docker Compose (local development)
+# ============================================================
+
+services:
+
+  # ----------------------------------------------------------
+  # PostgreSQL database
+  # ----------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    container_name: assembleMonitor_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-assembleuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-assemblepass}
+      POSTGRES_DB: ${POSTGRES_DB:-assembledb}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-assembleuser} -d ${POSTGRES_DB:-assembledb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - backend_net
+
+  # ----------------------------------------------------------
+  # FastAPI application
+  # ----------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: assembleMonitor_api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Override DATABASE_URL to point to the compose service name
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-assembleuser}:${POSTGRES_PASSWORD:-assemblepass}@db:5432/${POSTGRES_DB:-assembledb}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./uploads:/app/uploads        # persist uploaded files
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend_net
+    command: >
+      uvicorn app.main:app
+        --host 0.0.0.0
+        --port 8000
+        --reload
+        --log-level info
+
+  # ----------------------------------------------------------
+  # Adminer (lightweight DB GUI — development only)
+  # ----------------------------------------------------------
+  adminer:
+    image: adminer:latest
+    container_name: assembleMonitor_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - backend_net
+    profiles:
+      - tools              # start only with: docker compose --profile tools up
+
+volumes:
+  postgres_data:
+
+networks:
+  backend_net:
+    driver: bridge

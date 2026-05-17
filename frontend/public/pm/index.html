@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PM Dashboard | AssembleMonitor</title>
+   <link rel="stylesheet" href="/css/styles.css">
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/pm/index.html" class="active"><span class="material-symbols-outlined">dashboard</span> PM Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Planning</div>
+        <a href="/pm/manage-phases.html"><span class="material-symbols-outlined">account_tree</span> Manage Phases</a>
+        <a href="/pm/manage-tasks.html"><span class="material-symbols-outlined">assignment</span> Manage Tasks</a>
+        <div class="sidebar-section-label" style="padding-left:0">Materials</div>
+        <a href="/pm/material-master.html"><span class="material-symbols-outlined">inventory_2</span> Material Master</a>
+        <a href="/pm/material-stock.html"><span class="material-symbols-outlined">receipt_long</span> Material Stock Entry</a>
+        <a href="/pm/material-report.html"><span class="material-symbols-outlined">description</span> Material Report</a>
+        <div class="sidebar-section-label" style="padding-left:0">Finance</div>
+        <a href="/pm/expense-list.html"><span class="material-symbols-outlined">payments</span> Expense List</a>
+        <a href="/pm/budget-summary.html"><span class="material-symbols-outlined">account_balance</span> Budget Summary</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/pm/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media & Insights</div>
+        
+        <a href="/pm/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <a href="/pm/analytics.html"><span class="material-symbols-outlined">analytics</span> Analytics Dashboard</a>
+        <a href="/pm/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">AM</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Arjun Mehta</div>
+            <div class="sidebar-user-role">Senior PM</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">PM Dashboard</div>
+            <div class="topbar-breadcrumb">PM Module &gt; <span>Dashboard</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">AM</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in"><h1>Project Execution Hub 🔧</h1><p>Real-time oversight for Skyline Residency. 14 days remaining in Phase 4.</p></div>
+        <div class="stats-grid"><div class="stat-card animate-in animate-in-delay-1"><div class="stat-card-header"><div><div class="stat-card-label">Global Completion</div><div class="stat-card-value">0%</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">pie_chart</span></div></div><div class="stat-card-change up"><span class="material-symbols-outlined" style="font-size:14px">trending_up</span></div></div><div class="stat-card animate-in animate-in-delay-2"><div class="stat-card-header"><div><div class="stat-card-label">Active Tasks</div><div class="stat-card-value">0</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">task_alt</span></div></div><div class="stat-card-change up"><span class="material-symbols-outlined" style="font-size:14px">trending_up</span></div></div><div class="stat-card animate-in animate-in-delay-3"><div class="stat-card-header"><div><div class="stat-card-label">Budget Used</div><div class="stat-card-value">₹0</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">account_balance_wallet</span></div></div><div class="stat-card-change up"><span class="material-symbols-outlined" style="font-size:14px">trending_up</span></div></div><div class="stat-card animate-in animate-in-delay-4"><div class="stat-card-header"><div><div class="stat-card-label">Urgent Alerts</div><div class="stat-card-value">0</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">priority_high</span></div></div><div class="stat-card-change down"><span class="material-symbols-outlined" style="font-size:14px">trending_down</span></div></div></div>
+        <div class="dash-grid">
+          <div class="panel animate-in">
+            <div class="panel-header"><span class="panel-title">Portfolio Completion Progress</span></div>
+            <div class="panel-body" style="position: relative; height: 350px;">
+              <canvas id="pmCompletionChart"></canvas>
+            </div>
+          </div>
+          <div class="panel animate-in animate-in-delay-1">
+            <div class="panel-header"><span class="panel-title">Recent Activity</span></div>
+            <div class="panel-body">
+              <div class="activity-feed">
+                <!-- Filled by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dash-grid-equal"><div class="panel animate-in"><div class="panel-header"><span class="panel-title">Urgent Alerts</span></div><div class="panel-body" data-alerts-panel></div></div><div class="panel animate-in"><div class="panel-header"><span class="panel-title">Quick Actions</span></div><div class="panel-body"><div class="quick-actions"><a href="/pm/create-phase.html" class="quick-action-btn"><span class="material-symbols-outlined">layers</span> Create Phase</a><a href="/pm/create-task.html" class="quick-action-btn"><span class="material-symbols-outlined">add_task</span> New Task</a><a href="/pm/material-stock.html" class="quick-action-btn"><span class="material-symbols-outlined">inventory_2</span> Stock Entry</a><a href="/pm/expense-entry.html" class="quick-action-btn"><span class="material-symbols-outlined">add_card</span> Log Expense</a></div></div></div></div>
+      </div>
+    </div>
+  </div>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!requireAuth(['admin', 'project_manager'])) return;
+
+      const user = getAuthUser();
+      if (user && user.name) {
+        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const sidebarName = document.querySelector('.sidebar-user-name');
+        if (sidebarName) sidebarName.textContent = user.name;
+        const sidebarRole = document.querySelector('.sidebar-user-role');
+        if (sidebarRole) sidebarRole.textContent = 'Project Manager';
+        document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar').forEach(el => el.textContent = initials);
+      }
+
+      const statValues = document.querySelectorAll('.stat-card-value');
+      const statChanges = document.querySelectorAll('.stat-card-change');
+      statValues.forEach(v => v.textContent = '—');
+
+      try {
+        const projects = await apiFetch('/v1/projects');
+        if (!projects || !Array.isArray(projects) || projects.length === 0) {
+          document.querySelector('.dash-welcome p').textContent = 'No projects assigned to you yet. Contact your administrator.';
+          return;
+        }
+
+        const currentProject = projects.find(p => p.status === 'active') || projects[0];
+        document.querySelector('.dash-welcome p').innerHTML =
+          `Real-time oversight for <strong>${currentProject.name}</strong>. ${projects.length} project(s) assigned.`;
+
+        const overviews = await apiFetch('/v1/analytics/overview');
+        const projOverview = Array.isArray(overviews)
+          ? overviews.find(o => String(o.project_id) === String(currentProject.id))
+          : null;
+
+        if (projOverview) {
+          const ts = projOverview.task_stats || {};
+          if (statValues[0]) statValues[0].textContent = `${Math.round(projOverview.progress_pct || 0)}%`;
+          if (statValues[1]) statValues[1].textContent = ts.in_progress || 0;
+          if (statChanges[0]) statChanges[0].innerHTML = `<span class="material-symbols-outlined" style="font-size:14px">task_alt</span> ${ts.completed || 0} completed, ${ts.total || 0} total`;
+          if (statChanges[1]) statChanges[1].innerHTML = `<span class="material-symbols-outlined" style="font-size:14px">info</span> ${ts.not_started || 0} not started`;
+
+          const delayed = ts.delayed || 0;
+          if (statValues[3]) statValues[3].textContent = delayed;
+          if (statChanges[3]) statChanges[3].innerHTML = delayed > 0
+            ? `<span class="material-symbols-outlined" style="font-size:14px">trending_down</span> ${delayed} need attention`
+            : `<span class="material-symbols-outlined" style="font-size:14px">check_circle</span> All on track`;
+
+          const alertsPanel = document.querySelector('[data-alerts-panel]');
+          if (alertsPanel) {
+            alertsPanel.innerHTML = delayed === 0
+              ? '<div style="color:var(--text-muted);padding:8px 0">No urgent alerts — all tasks on track.</div>'
+              : `<div class="alert-item warning"><div class="alert-tag">Delayed Tasks</div><p>${delayed} task(s) are past their due date in <strong>${currentProject.name}</strong>.</p></div>`;
+          }
+
+          const progressPanel = document.querySelector('[data-progress-panel]');
+          if (progressPanel && Array.isArray(overviews)) {
+            progressPanel.innerHTML = overviews.map(o => {
+              const pct = Math.round(o.progress_pct || 0);
+              const colorClass = pct >= 80 ? ' green' : (pct >= 40 ? ' blue' : '');
+              return `<div class="progress-bar-wrapper">
+                <div class="progress-label"><span>${o.project_name}</span><span>${pct}%</span></div>
+                <div class="progress-track"><div class="progress-fill${colorClass}" style="width:${pct}%"></div></div>
+              </div>`;
+            }).join('');
+          }
+        }
+
+        try {
+          const budgetData = await apiFetch(`/v1/analytics/budget?project_id=${currentProject.id}`);
+          if (budgetData && statValues[2]) {
+            const spent = budgetData.total_spent || 0;
+            statValues[2].textContent = spent >= 10000000
+              ? `₹${(spent / 10000000).toFixed(2)} Cr`
+              : `₹${spent.toLocaleString('en-IN')}`;
+            if (statChanges[2]) statChanges[2].innerHTML = `<span class="material-symbols-outlined" style="font-size:14px">info</span> ${Math.round(budgetData.budget_used_pct || 0)}% of budget used`;
+          }
+        } catch (e) {
+          if (statValues[2]) statValues[2].textContent = '—';
+        }
+
+        try {
+          const activities = await apiFetch('/v1/analytics/recent-activity');
+          const activityFeed = document.querySelector('.activity-feed');
+          if (activityFeed && activities.length > 0) {
+            activityFeed.innerHTML = activities.map(a => `
+              <div class="activity-item">
+                <div class="activity-dot ${a.color || 'blue'}"></div>
+                <div class="activity-content">
+                  <h4>${a.title}</h4>
+                  <p>${a.description}</p>
+                  <span class="activity-time">${a.time_ago}</span>
+                </div>
+              </div>
+            `).join('');
+          } else if (activityFeed) {
+            activityFeed.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center;">No recent activity.</div>';
+          }
+        } catch (e) {
+          console.error('Failed to load activity:', e);
+        }
+
+      } catch (err) {
+        console.error('Failed to load PM dashboard data:', err);
+      }
+    });
+  </script>
+</body>
+</html>
+

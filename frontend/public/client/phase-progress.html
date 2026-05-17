@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase Progress | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Portfolio</div>
+      <nav class="sidebar-nav">
+        <a href="/client/index.html"><span class="material-symbols-outlined">dashboard</span> Client Dashboard</a>
+        <a href="/client/project-progress.html"><span class="material-symbols-outlined">analytics</span> Project Progress</a>
+        <a href="/client/phase-progress.html" class="active"><span class="material-symbols-outlined">step</span> Phase Progress</a>
+        <a href="/client/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <a href="/client/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt View</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">NS</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Neha Sharma</div>
+            <div class="sidebar-user-role">Client Director</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Phase Progress</div>
+            <div class="topbar-breadcrumb">Client &gt; <span>Phases</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">NS</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in">
+          <h1>Phase Progress</h1>
+          <p>Phase-level breakdown for your projects.</p>
+        </div>
+
+        <div class="panel animate-in" style="margin-bottom: 20px;">
+          <div class="panel-body" style="display:flex; align-items:center; gap:16px;">
+            <label for="clientPhaseSelect" style="font-weight:600; color:var(--text);">Select Project:</label>
+            <select id="clientPhaseSelect" class="form-select" style="min-width:300px;">
+              <option value="">Loading projects...</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="clientPhaseContent">
+          <div class="panel animate-in">
+            <div class="panel-body" style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+              Select a project to view phase progress
+            </div>
+          </div>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          requireAuth(['client']);
+          const user = getAuthUser();
+          if (user) {
+            const nameEl = document.querySelector('.sidebar-user-name');
+            const roleEl = document.querySelector('.sidebar-user-role');
+            const avatarEls = document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar');
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role.replace('_', ' ').toUpperCase();
+            if (avatarEls.length > 0) {
+              const initials = user.name.substring(0, 2).toUpperCase();
+              avatarEls.forEach(el => el.textContent = initials);
+            }
+          }
+
+          const projectSelect = document.getElementById('clientPhaseSelect');
+          const content = document.getElementById('clientPhaseContent');
+
+          try {
+            const projects = await apiFetch('/v1/projects');
+            projectSelect.innerHTML = '<option value="">Select a Project</option>';
+            projects.forEach(p => {
+              const opt = document.createElement('option');
+              opt.value = p.id;
+              opt.textContent = p.name;
+              projectSelect.appendChild(opt);
+            });
+
+            if (projects.length === 1) {
+              projectSelect.value = projects[0].id;
+              projectSelect.parentElement.parentElement.style.display = 'none';
+              await loadPhases(projects[0].id);
+            } else {
+              projectSelect.addEventListener('change', (e) => {
+                if (e.target.value) {
+                  loadPhases(e.target.value);
+                } else {
+                  content.innerHTML = '<div class="panel animate-in"><div class="panel-body" style="text-align:center;padding:40px 20px;color:var(--text-muted);">Select a project to view phase progress</div></div>';
+                }
+              });
+            }
+          } catch (err) {
+            console.error(err);
+            showToast('Failed to load projects', 'danger');
+            projectSelect.innerHTML = '<option value="">Error loading</option>';
+          }
+
+          async function loadPhases(projectId) {
+            try {
+              content.innerHTML = '<div class="panel animate-in"><div class="panel-body" style="text-align:center;padding:40px 20px;color:var(--text-muted);">Loading phases...</div></div>';
+
+              let phases = await apiFetch(`/v1/phases/project/${projectId}`);
+              phases.sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+
+              if (phases.length === 0) {
+                content.innerHTML = '<div class="panel animate-in"><div class="panel-body" style="text-align:center;padding:40px 20px;color:var(--text-muted);">No phases defined for this project.</div></div>';
+                return;
+              }
+
+              // Fetch tasks for each phase to calculate progress
+              const phaseResults = await Promise.all(
+                phases.map(async (phase) => {
+                  try {
+                    const tasks = await apiFetch(`/v1/tasks/phase/${phase.id}`);
+                    const total = tasks.length;
+                    const completed = tasks.filter(t => t.status === 'Completed').length;
+                    const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+                    return { phase, pct };
+                  } catch (e) {
+                    console.error('Failed tasks for phase', phase.id, e);
+                    return { phase, pct: 0 };
+                  }
+                })
+              );
+
+              content.innerHTML = '';
+
+              phaseResults.forEach(({ phase, pct }) => {
+                let badgeClass = 'pending';
+                if (phase.status === 'Completed') badgeClass = 'progress';
+                else if (phase.status === 'Delayed') badgeClass = 'overdue';
+                else if (phase.status === 'Active') badgeClass = 'active';
+
+                let fillClass = pct === 100 ? 'green' : (pct > 0 ? 'blue' : '');
+                
+                const start = formatShortDate(phase.start_date);
+                const end = formatShortDate(phase.end_date);
+
+                const cardHtml = `
+                  <div class="panel animate-in" style="margin-bottom: 16px;">
+                    <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
+                      <div>
+                        <span class="panel-title">${phase.name}</span>
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px; font-weight:normal;">Timeline: ${start} to ${end}</div>
+                      </div>
+                      <span class="status-badge ${badgeClass}">${phase.status}</span>
+                    </div>
+                    <div class="panel-body">
+                      <div class="progress-bar-wrapper" style="margin-bottom:0">
+                        <div class="progress-label"><span>Phase Progress</span><span>${pct}%</span></div>
+                        <div class="progress-track"><div class="progress-fill ${fillClass}" style="width:${pct}%"></div></div>
+                      </div>
+                    </div>
+                  </div>
+                `;
+                content.insertAdjacentHTML('beforeend', cardHtml);
+              });
+
+            } catch (err) {
+              console.error(err);
+              showToast('Failed to load phase progress', 'danger');
+              content.innerHTML = '<div class="panel animate-in"><div class="panel-body" style="text-align:center;padding:40px 20px;color:var(--text-muted);">Error loading phase progress.</div></div>';
+            }
+          }
+        });
+        </script>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+</html>

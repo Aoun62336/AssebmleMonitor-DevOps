@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engineer Dashboard | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="/js/app.js" defer></script>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/se/index.html" class="active"><span class="material-symbols-outlined">dashboard</span> Engineer Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Field Work</div>
+        <a href="/se/my-tasks.html"><span class="material-symbols-outlined">assignment</span> My Tasks</a>
+        <a href="/se/material-usage.html"><span class="material-symbols-outlined">inventory_2</span> Material Usage</a>
+        <div class="sidebar-section-label" style="padding-left:0">Attendance</div>
+        <a href="/se/check-in.html"><span class="material-symbols-outlined">login</span> Check-in / Check-out</a>
+        <a href="/se/attendance-history.html"><span class="material-symbols-outlined">schedule</span> Attendance History</a>
+        <div class="sidebar-section-label" style="padding-left:0">Reports</div>
+        <a href="/se/performance.html"><span class="material-symbols-outlined">trending_up</span> Performance Progress</a>
+        <a href="/se/gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">VP</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Vikram Patel</div>
+            <div class="sidebar-user-role">Site Engineer</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Engineer Dashboard</div>
+            <div class="topbar-breadcrumb">Site Engineer &gt; <span>Dashboard</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">VP</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in"><h1 id="seWelcomeText">Good Morning 🏗️</h1></div>
+
+        <!-- Stat Cards (global — across all projects) -->
+        <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);" id="seStatsGrid">
+          <div class="stat-card animate-in">
+            <div class="stat-card-header">
+              <div>
+                <div class="stat-card-label">My Tasks (Total)</div>
+                <div class="stat-card-value" id="valMyTasks">--</div>
+              </div>
+              <div class="stat-card-icon"><span class="material-symbols-outlined">checklist</span></div>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;" id="descMyTasks">All assigned to you</div>
+          </div>
+          <div class="stat-card animate-in">
+            <div class="stat-card-header">
+              <div>
+                <div class="stat-card-label">Today's Status</div>
+                <div class="stat-card-value" id="valTodayStatus" style="font-size:1.5rem">--</div>
+              </div>
+              <div class="stat-card-icon"><span class="material-symbols-outlined">login</span></div>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;" id="descTodayStatus">Attendance status</div>
+          </div>
+          <div class="stat-card animate-in">
+            <div class="stat-card-header">
+              <div>
+                <div class="stat-card-label">This Week Hours</div>
+                <div class="stat-card-value" id="valWeekHours">--</div>
+              </div>
+              <div class="stat-card-icon"><span class="material-symbols-outlined">schedule</span></div>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;" id="descWeekHours">Last 7 days</div>
+          </div>
+        </div>
+
+        <div class="dash-grid">
+          <div class="panel animate-in">
+            <div class="panel-header"><span class="panel-title">My Recent Tasks</span></div>
+            <div class="panel-body">
+              <table class="task-table" style="font-size:0.813rem;" id="dashboardTaskTable">
+                <thead><tr><th>Task</th><th>Phase</th><th>Due Date</th><th>Status</th></tr></thead>
+                <tbody id="dashboardTaskBody">
+                  <tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Loading tasks...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:24px">
+            <div class="panel animate-in"><div class="panel-header"><span class="panel-title">Quick Actions</span></div><div class="panel-body"><div class="quick-actions"><a href="my-tasks.html" class="quick-action-btn" style="text-decoration:none;text-align:center;"><span class="material-symbols-outlined">assignment</span> My Tasks</a><a href="material-usage.html" class="quick-action-btn" style="text-decoration:none;text-align:center;"><span class="material-symbols-outlined">inventory_2</span> Log Materials</a><a href="check-in.html" class="quick-action-btn" style="text-decoration:none;text-align:center;"><span class="material-symbols-outlined">login</span> Check In/Out</a></div></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      requireAuth(['site_engineer']);
+      const user = getAuthUser();
+      if (user) {
+        const hour = new Date().getHours();
+        const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+        document.getElementById('seWelcomeText').textContent = `${greeting}, ${user.name.split(' ')[0]}`;
+        const nameEl = document.querySelector('.sidebar-user-name');
+        const roleEl = document.querySelector('.sidebar-user-role');
+        const avatarEls = document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar');
+        if (nameEl) nameEl.textContent = user.name;
+        if (roleEl) roleEl.textContent = user.role.replace(/_/g, ' ').toUpperCase();
+        if (avatarEls.length > 0) {
+          const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          avatarEls.forEach(el => el.textContent = initials);
+        }
+      }
+
+      // ── Load global assigned task data (not project-scoped) ──────────
+      try {
+        const [myTasks, allAttendance] = await Promise.all([
+          apiFetch('/v1/tasks/assigned'),
+          apiFetch('/v1/attendance/my').catch(() => [])
+        ]);
+
+        // ── Stat 1: My Tasks count ────────────────────────────────────
+        const totalTasks   = myTasks.length;
+        const doneTasks    = myTasks.filter(t => t.status === 'completed');
+        const delayedTasks = myTasks.filter(t => t.is_delayed);
+        document.getElementById('valMyTasks').textContent  = totalTasks;
+        document.getElementById('descMyTasks').textContent = `${doneTasks.length} done · ${delayedTasks.length} delayed`;
+
+        // ── Recent Task Table ─────────────────────────────────────────
+        const tbody = document.getElementById('dashboardTaskBody');
+        tbody.innerHTML = '';
+        if (myTasks.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">No tasks assigned.</td></tr>';
+        } else {
+          // show up to 8 most recent (by due_date)
+          const sorted = [...myTasks].sort((a, b) => {
+            if (!a.due_date) return 1;
+            if (!b.due_date) return -1;
+            return new Date(a.due_date) - new Date(b.due_date);
+          });
+          sorted.slice(0, 8).forEach(task => {
+            const tr = document.createElement('tr');
+            const statusCls = task.status === 'completed' ? 'active' : task.is_delayed ? 'overdue' : task.status === 'in_progress' ? 'progress' : 'pending';
+            const label     = (task.status || 'not_started').replace(/_/g, ' ');
+            tr.innerHTML = `
+              <td>${task.name}</td>
+              <td>${task.phase_name || '-'}</td>
+              <td>${formatShortDate(task.due_date)}</td>
+              <td><span class="status-badge ${statusCls}">${label}</span></td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+
+        // ── Today's attendance status ─────────────────────────────────
+        const myAttendance = Array.isArray(allAttendance) ? allAttendance : [];
+        const todayStr = new Date().toISOString().split('T')[0];
+        const todayRec = myAttendance.find(a =>
+          (a.attendance_date || '').startsWith(todayStr) ||
+          (a.check_in || '').startsWith(todayStr)
+        );
+        if (todayRec) {
+          if (todayRec.check_out) {
+            document.getElementById('valTodayStatus').textContent  = 'Checked Out';
+            document.getElementById('descTodayStatus').textContent = `Out at ${String(todayRec.check_out).substring(11, 16)}`;
+          } else {
+            document.getElementById('valTodayStatus').textContent  = 'Checked In';
+            document.getElementById('descTodayStatus').textContent = `In at ${String(todayRec.check_in || '').substring(11, 16)}`;
+          }
+        } else {
+          document.getElementById('valTodayStatus').textContent  = 'Not Checked In';
+          document.getElementById('descTodayStatus').textContent = 'No record today';
+        }
+
+        // ── Week hours ────────────────────────────────────────────────
+        const oneWeekAgo = new Date(); oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const weekRecs   = myAttendance.filter(a => new Date(a.attendance_date || a.check_in) >= oneWeekAgo);
+        const totalHours = weekRecs.reduce((s, r) => s + (r.total_hours || 0), 0);
+        document.getElementById('valWeekHours').textContent  = totalHours.toFixed(1) + 'h';
+        document.getElementById('descWeekHours').textContent = `${weekRecs.length} day(s) logged`;
+
+      } catch (err) {
+        console.error('SE dashboard error:', err);
+        showToast('Failed to load dashboard data', 'danger');
+        document.getElementById('valMyTasks').textContent    = 'Err';
+        document.getElementById('valTodayStatus').textContent = 'Err';
+        document.getElementById('valWeekHours').textContent  = 'Err';
+      }
+    });
+  </script>
+  <style>
+    .status-update-wrapper { display: flex; align-items: center; flex-wrap: wrap; }
+    .dash-status-select { min-width: 110px; padding: 4px 8px; font-size: 0.75rem; height: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); background-color: var(--bg); color: var(--text); }
+    .dash-status-select:focus { border-color: var(--accent); outline: none; }
+  </style>
+</body>
+</html>

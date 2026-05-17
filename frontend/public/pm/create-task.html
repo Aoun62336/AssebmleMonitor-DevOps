@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Task | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/pm/index.html"><span class="material-symbols-outlined">dashboard</span> PM Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Planning</div>
+        <a href="/pm/manage-phases.html"><span class="material-symbols-outlined">account_tree</span> Manage Phases</a>
+        <a href="/pm/manage-tasks.html"><span class="material-symbols-outlined">assignment</span> Manage Tasks</a>
+        <div class="sidebar-section-label" style="padding-left:0">Materials</div>
+        <a href="/pm/material-master.html"><span class="material-symbols-outlined">inventory_2</span> Material Master</a>
+        <a href="/pm/material-stock.html"><span class="material-symbols-outlined">receipt_long</span> Material Stock Entry</a>
+        <a href="/pm/material-report.html"><span class="material-symbols-outlined">description</span> Material Report</a>
+        <div class="sidebar-section-label" style="padding-left:0">Finance</div>
+        <a href="/pm/expense-list.html"><span class="material-symbols-outlined">payments</span> Expense List</a>
+        <a href="/pm/budget-summary.html"><span class="material-symbols-outlined">account_balance</span> Budget Summary</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/pm/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media & Insights</div>
+        
+        <a href="/pm/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <a href="/pm/analytics.html"><span class="material-symbols-outlined">analytics</span> Analytics Dashboard</a>
+        <a href="/pm/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">AM</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Arjun Mehta</div>
+            <div class="sidebar-user-role">Senior PM</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Create Task</div>
+            <div class="topbar-breadcrumb">PM &gt; <span>Create Task</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">AM</div>
+        </div>
+      </header>
+      <div class="dash-content">
+<div class="dash-welcome animate-in"><h1>Create New Task</h1><p>Assign a task to a team member.</p></div><div class="panel animate-in"><div class="panel-header"><span class="panel-title">Task Details</span></div><div class="panel-body"><form id="createTaskForm"><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px"><div class="form-group"><label>Task Title</label><input type="text" name="name" id="taskName" class="form-control" placeholder="e.g. Foundation Pour Zone A" required></div><div class="form-group"><label>Project</label><select id="taskProject" name="project_id" class="form-select" required><option value="">Loading projects...</option></select></div><div class="form-group"><label>Phase</label><select id="taskPhase" name="phase_id" class="form-select" required disabled><option value="">Select Phase</option></select></div><div class="form-group"><label>Assign To</label><select id="taskAssignee" name="assigned_to" class="form-select" required><option value="">Loading engineers...</option></select></div><div class="form-group"><label>Priority</label><select id="taskPriority" name="priority" class="form-select"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div><div class="form-group"><label>Start Date</label><input type="date" id="taskStartDate" name="start_date" class="form-control" required></div><div class="form-group"><label>Due Date</label><input type="date" id="taskDueDate" name="due_date" class="form-control" required></div><div class="form-group"><label>Status</label><select name="status" class="form-select" disabled style="background:var(--bg);cursor:not-allowed;"><option value="not_started" selected>Not Started</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select><small style="color:var(--text-muted);display:block;margin-top:4px">Status is explicitly set by the assigned Site Engineer.</small></div><div class="form-group" style="grid-column:1/-1"><label>Description</label><textarea id="taskDesc" name="description" class="form-control" rows="3" placeholder="Task details..."></textarea></div></div><div style="margin-top:24px"><button type="submit" class="btn btn-primary"><span class="material-symbols-outlined">add_task</span> Create Task</button></div></form></div></div>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!requireAuth(['admin', 'project_manager'])) return;
+
+      const user = getAuthUser();
+      if (user && user.name) {
+        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const sidebarName = document.querySelector('.sidebar-user-name');
+        if (sidebarName) sidebarName.textContent = user.name;
+        document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar').forEach(el => el.textContent = initials);
+      }
+
+      const form = document.getElementById('createTaskForm');
+      const projectSelect = document.getElementById('taskProject');
+      const phaseSelect = document.getElementById('taskPhase');
+      const assigneeSelect = document.getElementById('taskAssignee');
+      const prioritySelect = document.getElementById('taskPriority');
+      const startDateInput = document.getElementById('taskStartDate');
+      const dueDateInput = document.getElementById('taskDueDate');
+      const taskNameInput = document.getElementById('taskName');
+      const taskDescInput = document.getElementById('taskDesc');
+
+      let phasesData = [];
+
+      try {
+        const projects = await apiFetch('/v1/projects');
+        projectSelect.innerHTML = '<option value="">Select Project</option>' + 
+          projects.map(p => `<option value="${p.id}" data-start="${p.start_date||''}" data-end="${p.end_date||''}">${p.name}</option>`).join('');
+          
+        // No longer pre-load all engineers — we load per-project below
+        assigneeSelect.innerHTML = '<option value="">Select Project First</option>';
+      } catch (err) {
+        console.error('Failed to load form data:', err);
+      }
+
+      projectSelect.addEventListener('change', async () => {
+        const pid = projectSelect.value;
+        phaseSelect.innerHTML = '<option value="">Select Phase</option>';
+        phaseSelect.disabled = true;
+        assigneeSelect.innerHTML = '<option value="">Loading engineers...</option>';
+        phasesData = [];
+        
+        if (!pid) {
+          assigneeSelect.innerHTML = '<option value="">Select Project First</option>';
+          return;
+        }
+
+        // Show project date range
+        const opt = projectSelect.options[projectSelect.selectedIndex];
+        const projStart = opt.dataset.start;
+        const projEnd = opt.dataset.end;
+        const durationEl = projectSelect.closest('.form-group')?.querySelector('.project-duration') || (() => {
+          const d = document.createElement('small');
+          d.className = 'project-duration';
+          d.style.cssText = 'display:block;color:var(--text-muted);margin-top:4px';
+          projectSelect.closest('.form-group')?.appendChild(d);
+          return d;
+        })();
+        if (durationEl) durationEl.textContent = projStart ? `Project Duration: ${projStart} to ${projEnd||'TBD'}` : '';
+        
+        try {
+          // Load phases and project-specific engineers in parallel
+          const [allPhases, team] = await Promise.all([
+            apiFetch(`/v1/phases/project/${pid}`),
+            apiFetch(`/v1/projects/${pid}/assignments`)
+          ]);
+          phasesData = allPhases;
+          
+          if (phasesData.length > 0) {
+            phaseSelect.innerHTML = '<option value="">Select Phase</option>' + phasesData.map(p => 
+              `<option value="${p.id}" data-start="${p.start_date||''}" data-end="${p.end_date||''}">${p.name}</option>`
+            ).join('');
+            phaseSelect.disabled = false;
+          }
+
+          const engineers = (team || []).filter(m => (m.role||'').toLowerCase() === 'site_engineer');
+          if (engineers.length > 0) {
+            assigneeSelect.innerHTML = '<option value="">Select Site Engineer</option>' +
+              engineers.map(e => `<option value="${e.user_id}">${e.full_name}</option>`).join('');
+          } else {
+            assigneeSelect.innerHTML = '<option value="">No engineers assigned to this project</option>';
+          }
+        } catch (err) {
+          console.error('Failed to load phases/engineers:', err);
+          assigneeSelect.innerHTML = '<option value="">Error loading engineers</option>';
+        }
+      });
+
+      // Show phase duration on phase select
+      phaseSelect.addEventListener('change', () => {
+        const opt = phaseSelect.options[phaseSelect.selectedIndex];
+        const phaseStart = opt?.dataset.start;
+        const phaseEnd = opt?.dataset.end;
+        let durEl = phaseSelect.closest('.form-group')?.querySelector('.phase-duration');
+        if (!durEl) {
+          durEl = document.createElement('small');
+          durEl.className = 'phase-duration';
+          durEl.style.cssText = 'display:block;color:var(--text-muted);margin-top:4px';
+          phaseSelect.closest('.form-group')?.appendChild(durEl);
+        }
+        if (durEl) durEl.textContent = phaseStart ? `Phase Duration: ${phaseStart} to ${phaseEnd||'TBD'}` : '';
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const btn = form.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = 'Creating...';
+        btn.disabled = true;
+
+        const phaseId = phaseSelect.value;
+        const name = taskNameInput.value.trim();
+        const assignedTo = assigneeSelect.value || null;
+        const priority = prioritySelect.value.toLowerCase() || 'medium';
+        const startDate = startDateInput.value || null;
+        const dueDate = dueDateInput.value || null;
+        // Read description fresh from DOM to ensure we capture the latest value
+        const descEl = document.getElementById('taskDesc');
+        const description = descEl ? descEl.value.trim() : '';
+        
+        if (!phaseId || !name) {
+          showToast('Task Title and Phase are required', 'danger');
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          return;
+        }
+
+        const selectedPhase = phasesData.find(p => p.id === phaseId);
+        if (selectedPhase) {
+          if (startDate && selectedPhase.start_date && new Date(startDate) < new Date(selectedPhase.start_date)) {
+            showToast(`Task Start Date cannot be earlier than Phase Start Date (${selectedPhase.start_date}).`, 'danger');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+          }
+          if (dueDate && selectedPhase.end_date && new Date(dueDate) > new Date(selectedPhase.end_date)) {
+            showToast(`Task Due Date cannot be later than Phase End Date (${selectedPhase.end_date}).`, 'danger');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+          }
+        }
+
+        try {
+          const payload = {
+            phase_id: phaseId,
+            name: name,
+            description: description || null,
+            assigned_to: assignedTo,
+            priority: priority,
+            start_date: startDate,
+            due_date: dueDate
+          };
+          console.log('[CreateTask] Sending payload:', JSON.stringify(payload));
+
+          await apiFetch('/v1/tasks', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+
+          showToast('Task created successfully!', 'success');
+          form.reset();
+          phaseSelect.disabled = true;
+        } catch (err) {
+          console.error('Failed to create task:', err);
+          showToast('Error: ' + err.message, 'danger');
+        } finally {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

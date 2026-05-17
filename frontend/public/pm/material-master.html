@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Material Master | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/pm/index.html"><span class="material-symbols-outlined">dashboard</span> PM Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Planning</div>
+        <a href="/pm/create-phase.html"><span class="material-symbols-outlined">layers</span> Create Phase</a>
+        <a href="/pm/task-management.html"><span class="material-symbols-outlined">assignment</span> Task Management</a>
+        <a href="/pm/phase-management.html"><span class="material-symbols-outlined">account_tree</span> Phase Management</a>
+        <div class="sidebar-section-label" style="padding-left:0">Materials</div>
+        <a href="/pm/material-master.html" class="active"><span class="material-symbols-outlined">inventory_2</span> Material Master</a>
+        <a href="/pm/material-stock.html"><span class="material-symbols-outlined">receipt_long</span> Material Stock Entry</a>
+        <a href="/pm/material-report.html"><span class="material-symbols-outlined">description</span> Material Report</a>
+        <div class="sidebar-section-label" style="padding-left:0">Finance</div>
+        <a href="/pm/expense-list.html"><span class="material-symbols-outlined">payments</span> Expense List</a>
+        <a href="/pm/budget-summary.html"><span class="material-symbols-outlined">account_balance</span> Budget Summary</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/pm/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media & Insights</div>
+        
+        <a href="/pm/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <a href="/pm/analytics.html"><span class="material-symbols-outlined">analytics</span> Analytics Dashboard</a>
+        <a href="/pm/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar" id="sidebarAvatar">--</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="sidebarName">Loading...</div>
+            <div class="sidebar-user-role" id="sidebarRole">--</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Material Master</div>
+            <div class="topbar-breadcrumb">PM &gt; <span>Materials</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar" id="topbarAvatar">--</div>
+        </div>
+      </header>
+      <div class="dash-content">
+        <div class="dash-welcome animate-in">
+          <h1>Material Master</h1>
+          <p>Central catalogue of all construction materials.</p>
+        </div>
+        
+        <div class="panel animate-in" style="margin-bottom:24px">
+          <div class="panel-body">
+            <div class="form-group" style="margin:0">
+              <label>Select Project</label>
+              <select id="materialProjectSelect" class="form-select">
+                <option value="">-- Select Project --</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel animate-in">
+          <div class="panel-header" style="display:flex; align-items:center;">
+            <span class="panel-title">Inventory</span>
+            <button id="addMaterialBtn" class="btn btn-primary" style="margin-left:auto;">Add Material</button>
+          </div>
+          <div id="addMaterialForm" style="display:none; padding:16px; border-bottom:1px solid var(--border-color); background:var(--surface-color);">
+            <form id="materialForm" style="display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap;">
+              <div class="form-group" style="margin:0; flex:1; min-width:150px;">
+                <label>Material Name</label>
+                <input type="text" id="matName" class="form-input" required>
+              </div>
+              <div class="form-group" style="margin:0; flex:1; min-width:120px;">
+                <label>Unit</label>
+                <select id="matUnit" class="form-select" required>
+                  <option value="">-- Select Unit --</option>
+                  <option value="Kg">Kg</option>
+                  <option value="Piece">Piece</option>
+                  <option value="Liter">Liter</option>
+                  <option value="Bag">Bag</option>
+                  <option value="Brass">Brass</option>
+                  <option value="Truck">Truck</option>
+                  <option value="Tractor">Tractor</option>
+                  <option value="Tonne">Tonne</option>
+                  <option value="Sq.Ft">Sq.Ft</option>
+                  <option value="Meter">Meter</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0; flex:1; min-width:120px;">
+                <label>Total Required Qty</label>
+                <input type="number" id="matRequiredQty" class="form-input" step="0.001" min="0" placeholder="e.g. 1000">
+              </div>
+              <div class="form-group" style="margin:0; flex:1; min-width:100px;">
+                <label>Unit Cost (?)</label>
+                <input type="number" id="matCost" class="form-input" step="0.01">
+              </div>
+              <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <table class="task-table">
+              <thead>
+                <tr>
+                  <th>Material</th>
+                  <th>Unit</th>
+                  <th>Total Required</th>
+                  <th>Total Received</th>
+                  <th>Remaining Stock</th>
+                  <th>Unit Cost (?)</th>
+                </tr>
+              </thead>
+              <tbody id="materialTableBody">
+                <tr><td colspan="6" style="text-align:center; padding:24px;">Select a project to view materials</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        requireAuth(['project_manager', 'admin']);
+        
+        const user = getAuthUser();
+        if (user) {
+          document.getElementById('sidebarName').textContent = user.name;
+          document.getElementById('sidebarRole').textContent = user.role.replace('_', ' ').toUpperCase();
+          const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          document.getElementById('sidebarAvatar').textContent = initials;
+          document.getElementById('topbarAvatar').textContent = initials;
+        }
+
+        // Fetch projects
+        const projects = await apiFetch('/v1/projects');
+        const projectSelect = document.getElementById('materialProjectSelect');
+        projects.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = p.name;
+          projectSelect.appendChild(opt);
+        });
+
+        const loadMaterials = async () => {
+          const projectId = projectSelect.value;
+          const tbody = document.getElementById('materialTableBody');
+          
+          if (!projectId) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px;">Select a project to view materials</td></tr>';
+            return;
+          }
+
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px;">Loading materials...</td></tr>';
+          
+          try {
+            const materials = await apiFetch(`/v1/materials/project/${projectId}`);
+            if (materials.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px;">No materials found.</td></tr>';
+              return;
+            }
+
+            tbody.innerHTML = '';
+            materials.forEach(mat => {
+              const tr = document.createElement('tr');
+              
+              const reqQty = mat.total_required_qty != null ? Number(mat.total_required_qty).toFixed(2) : '-';
+              tr.innerHTML = `
+                <td><strong>${mat.name}</strong></td>
+                <td>${mat.unit}</td>
+                <td>${reqQty}</td>
+                <td>${Number(mat.total_received).toFixed(2)}</td>
+                <td>${Number(mat.remaining_stock).toFixed(2)}</td>
+                <td>₹${Number(mat.unit_cost || 0).toLocaleString('en-IN')}</td>
+              `;
+              tbody.appendChild(tr);
+            });
+          } catch (err) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:red;">Failed to load materials</td></tr>';
+            showToast(err.message || 'Failed to load materials', 'error');
+          }
+        };
+
+        projectSelect.addEventListener('change', loadMaterials);
+
+        // Add Material Toggle
+        const addMaterialBtn = document.getElementById('addMaterialBtn');
+        const addMaterialForm = document.getElementById('addMaterialForm');
+        
+        addMaterialBtn.addEventListener('click', () => {
+          const isHidden = addMaterialForm.style.display === 'none';
+          addMaterialForm.style.display = isHidden ? 'block' : 'none';
+          if (isHidden) {
+            document.getElementById('matName').focus();
+          }
+        });
+
+        // Add Material Form Submit
+        const form = document.getElementById('materialForm');
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const projectId = projectSelect.value;
+          
+          if (!projectId) {
+            showToast('Please select a project first', 'error');
+            return;
+          }
+
+          const payload = {
+            name: document.getElementById('matName').value.trim(),
+            unit: document.getElementById('matUnit').value,
+            unit_cost: parseFloat(document.getElementById('matCost').value) || null,
+            total_required_qty: parseFloat(document.getElementById('matRequiredQty').value) || null,
+            project_id: projectId
+          };
+
+          if (!payload.unit) { showToast('Please select a unit', 'error'); return; }
+
+          try {
+            await apiFetch('/v1/materials', {
+              method: 'POST',
+              body: JSON.stringify(payload)
+            });
+            showToast('Material added successfully', 'success');
+            form.reset();
+            addMaterialForm.style.display = 'none';
+            loadMaterials();
+          } catch (err) {
+            showToast(err.message || 'Failed to add material', 'error');
+          }
+        });
+
+      } catch (err) {
+        showToast(err.message || 'Failed to initialize page', 'error');
+      }
+    });
+  </script>
+</body>
+</html>
+

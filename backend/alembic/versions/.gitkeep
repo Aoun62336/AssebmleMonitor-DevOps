@@ -1,0 +1,4 @@
+"""
+Alembic versions package.
+Migration scripts are generated here by `alembic revision --autogenerate`.
+"""

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gantt Chart | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+                <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+                <a href="/admin/project-list.html"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html"><span class="material-symbols-outlined">account_balance</span> Budget Management</a>
+        <a href="/admin/expenses.html"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+                <a href="/admin/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html" class="active"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">RK</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Rajesh Kumar</div>
+            <div class="sidebar-user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Gantt Chart</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>Gantt Chart</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">RK</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in">
+          <h1>Gantt Chart</h1>
+          <p>Visual project timeline and progress.</p>
+        </div>
+
+        <div class="panel animate-in" style="margin-bottom:24px">
+          <div class="panel-body">
+            <div class="form-group" style="margin:0">
+              <label>Select Project</label>
+              <select id="ganttProjectSelect" class="form-select">
+                <option value="">-- Select Project --</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel animate-in">
+          <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <span class="panel-title">Timeline</span>
+            <div style="display:flex; gap:12px; font-size:12px; font-weight:500; flex-wrap:wrap;">
+              <span style="display:flex; align-items:center; gap:4px;"><span style="width:12px; height:12px; border-radius:3px; background:#27ae60;"></span> Completed</span>
+              <span style="display:flex; align-items:center; gap:4px;"><span style="width:12px; height:12px; border-radius:3px; background:#3498db;"></span> In Progress</span>
+              <span style="display:flex; align-items:center; gap:4px;"><span style="width:12px; height:12px; border-radius:3px; background:#bdc3c7;"></span> Not Started</span>
+              <span style="display:flex; align-items:center; gap:4px;"><span style="width:12px; height:12px; border-radius:3px; background:#e74c3c;"></span> Delayed</span>
+            </div>
+          </div>
+          <div class="panel-body" style="padding:16px;">
+            <div id="ganttContainer" style="overflow-x:auto;">
+              <div style="text-align:center; padding:40px; color:var(--text-muted);">Select a project to view Gantt Chart</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        requireAuth(['admin']);
+
+        const user = getAuthUser();
+        if (user) {
+          const sidebarName = document.querySelector('.sidebar-user-name');
+          const sidebarRole = document.querySelector('.sidebar-user-role');
+          const sidebarAvatar = document.querySelector('.sidebar-user-avatar');
+          const topbarAvatar = document.querySelector('.topbar-avatar');
+          if (sidebarName) sidebarName.textContent = user.name;
+          if (sidebarRole) sidebarRole.textContent = user.role.replace(/_/g, ' ').toUpperCase();
+          const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          if (sidebarAvatar) sidebarAvatar.textContent = initials;
+          if (topbarAvatar) topbarAvatar.textContent = initials;
+        }
+
+        const projectSelect = document.getElementById('ganttProjectSelect');
+        const ganttContainer = document.getElementById('ganttContainer');
+
+        const projects = await apiFetch('/v1/projects');
+        if (!projects || projects.length === 0) {
+          ganttContainer.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">No projects found.</div>';
+          return;
+        }
+        projects.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id; opt.textContent = p.name;
+          projectSelect.appendChild(opt);
+        });
+
+        const DAY_PX = 28; // pixels per day — controls timeline width
+
+        const renderGantt = async (projectId) => {
+          if (!projectId) {
+            ganttContainer.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Select a project to view Gantt Chart</div>';
+            return;
+          }
+          ganttContainer.innerHTML = '<div style="text-align:center;padding:40px;">Loading timeline…</div>';
+
+          try {
+            const [data, phasesRaw] = await Promise.all([
+              apiFetch(`/v1/analytics/gantt?project_id=${projectId}`),
+              apiFetch(`/v1/phases/project/${projectId}`).catch(() => [])
+            ]);
+            const tasks = (data && data.tasks) ? data.tasks : [];
+
+            if (tasks.length === 0 && phasesRaw.length === 0) {
+              ganttContainer.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">No phases or tasks found for this project.</div>';
+              return;
+            }
+
+            // Determine date range
+            const now = new Date(); now.setHours(0,0,0,0);
+            let minTs = now.getTime();
+            let maxTs = now.getTime() + 86400000 * 30;
+
+            phasesRaw.forEach(ph => {
+              if (ph.start_date) minTs = Math.min(minTs, new Date(ph.start_date).getTime());
+              if (ph.end_date)   maxTs = Math.max(maxTs, new Date(ph.end_date).getTime());
+            });
+            tasks.forEach(t => {
+              if (t.start_date) minTs = Math.min(minTs, new Date(t.start_date).getTime());
+              if (t.due_date)   maxTs = Math.max(maxTs, new Date(t.due_date).getTime());
+            });
+
+            const startDate = new Date(minTs); startDate.setHours(0,0,0,0);
+            const endDate   = new Date(maxTs); endDate.setHours(23,59,59,999);
+            const totalDays = Math.max(1, Math.ceil((endDate - startDate) / 86400000)) + 2;
+            const timelineW = totalDays * DAY_PX;
+
+            const toX = (dateStr) => {
+              if (!dateStr) return 0;
+              const d = new Date(dateStr); d.setHours(0,0,0,0);
+              return Math.max(0, Math.round((d - startDate) / 86400000) * DAY_PX);
+            };
+            const toW = (s, e) => {
+              if (!s || !e) return DAY_PX;
+              return Math.max(DAY_PX, Math.round((new Date(e) - new Date(s)) / 86400000) * DAY_PX);
+            };
+
+            const COLORS = {
+              completed:   '#27ae60',
+              in_progress: '#3498db',
+              not_started: '#bdc3c7',
+              delayed:     '#e74c3c',
+              blocked:     '#f39c12'
+            };
+
+            let rulerHtml = '';
+            for (let d = 0; d < totalDays; d++) {
+              const tick = new Date(startDate.getTime() + d * 86400000);
+              if (tick.getDay() === 1 || d === 0) {
+                const label = formatShortDate(tick);
+                rulerHtml += `<div style="position:absolute;left:${d*DAY_PX}px;top:0;bottom:0;display:flex;flex-direction:column;align-items:flex-start;">
+                  <span style="font-size:10px;color:var(--text-muted);white-space:nowrap;padding-left:3px;">${label}</span>
+                  <div style="width:1px;flex:1;background:var(--border-color,#e0e0e0);opacity:0.6;"></div>
+                </div>`;
+              }
+            }
+
+            const todayX = toX(now.toISOString().split('T')[0]);
+            rulerHtml += `<div style="position:absolute;left:${todayX}px;top:0;bottom:0;width:2px;background:var(--danger,#e74c3c);opacity:0.7;z-index:2;" title="Today"></div>`;
+
+            const grouped = {};
+            tasks.forEach(t => {
+              const ph = t.phase_name || 'Unassigned';
+              if (!grouped[ph]) grouped[ph] = { phase: phasesRaw.find(p => p.name === t.phase_name), tasks: [] };
+              grouped[ph].tasks.push(t);
+            });
+            phasesRaw.forEach(ph => {
+              if (!grouped[ph.name]) grouped[ph.name] = { phase: ph, tasks: [] };
+            });
+
+            const LABEL_W = 220;
+            let rowsHtml = '';
+
+            Object.keys(grouped).sort().forEach(phName => {
+              const { phase, tasks: pTasks } = grouped[phName];
+              const phStart = phase && phase.start_date;
+              const phEnd   = phase && phase.end_date;
+              const phColor = phase && phase.status === 'completed' ? COLORS.completed : phase && phase.status === 'in_progress' ? COLORS.in_progress : '#8e9db3';
+              const phX = phStart ? toX(phStart) : 0;
+              const phW = phStart && phEnd ? toW(phStart, phEnd) : DAY_PX * 5;
+
+              rowsHtml += `
+                <div style="display:flex;align-items:center;background:rgba(0,0,0,0.04);border-bottom:2px solid var(--border-color,#e0e0e0);">
+                  <div style="min-width:${LABEL_W}px;max-width:${LABEL_W}px;padding:8px 12px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--text); position:sticky; left:0; background:var(--bg); z-index:10; border-right:1px solid var(--border-color);">${phName}</div>
+                  <div style="position:relative;height:36px;flex:1;min-width:${timelineW}px;">
+                    <div style="position:absolute;left:${phX}px;width:${phW}px;height:14px;top:11px;background:${phColor};opacity:0.35;border-radius:3px;" title="${phName} phase bar"></div>
+                    ${rulerHtml}
+                  </div>
+                </div>`;
+
+              pTasks.forEach(t => {
+                const tX = t.start_date ? toX(t.start_date) : (phStart ? toX(phStart) : 0);
+                const tW = toW(t.start_date || phStart, t.due_date || phEnd);
+                let color = COLORS.not_started;
+                if (t.is_delayed) color = COLORS.delayed;
+                else if (t.status) color = COLORS[t.status.toLowerCase()] || COLORS.not_started;
+
+                rowsHtml += `
+                  <div style="display:flex;align-items:center;border-bottom:1px solid var(--border-color,#e0e0e0);">
+                    <div style="min-width:${LABEL_W}px;max-width:${LABEL_W}px;padding:8px 12px 8px 24px;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; position:sticky; left:0; background:var(--bg); z-index:10; border-right:1px solid var(--border-color);" title="${t.name}">↳ ${t.name}</div>
+                    <div style="position:relative;height:34px;flex:1;min-width:${timelineW}px;">
+                      <div style="position:absolute;left:${tX}px;width:${tW}px;height:14px;top:10px;background:${color};border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.15);cursor:default;"
+                        title="${t.name} | ${t.status}${t.is_delayed?' (Delayed)':''}
+Start: ${t.start_date||'—'}  Due: ${t.due_date||'—'}"></div>
+                    </div>
+                  </div>`;
+              });
+            });
+
+            ganttContainer.innerHTML = `
+              <style>
+                .gantt-scroll-outer { 
+                  overflow-x: auto; 
+                  overflow-y: auto;
+                  max-height: 600px;
+                  border-radius: 8px; 
+                  border: 1px solid var(--border-color, #e2e8f0); 
+                  background: #fff;
+                }
+                .gantt-inner { min-width: max-content; display: flex; flex-direction: column; }
+                .gantt-header { 
+                  display:flex; 
+                  align-items:center; 
+                  background: var(--bg, #f8fafc); 
+                  border-bottom: 2px solid var(--border-color, #e2e8f0); 
+                  position: sticky; 
+                  top: 0; 
+                  z-index: 10; 
+                }
+                .gantt-label-col {
+                  min-width: ${LABEL_W}px;
+                  max-width: ${LABEL_W}px;
+                  background: var(--bg, #f8fafc);
+                  position: sticky;
+                  left: 0;
+                  z-index: 5;
+                  border-right: 1px solid var(--border-color, #e2e8f0);
+                }
+                .gantt-row {
+                  display: flex;
+                  align-items: center;
+                  border-bottom: 1px solid var(--border-color, #e2e8f0);
+                }
+                .gantt-row:hover {
+                  background: rgba(99, 102, 241, 0.03);
+                }
+                .gantt-phase-row {
+                  background: rgba(0, 0, 0, 0.02);
+                  font-weight: 700;
+                }
+                .gantt-timeline-cell {
+                  position: relative;
+                  height: 36px;
+                  flex: 1;
+                  min-width: ${timelineW}px;
+                }
+              </style>
+              <div class="gantt-scroll-outer">
+                <div class="gantt-inner">
+                  <div class="gantt-header">
+                    <div class="gantt-label-col" style="padding: 12px; font-weight: 600; font-size: 13px; color: var(--text-muted);">Phase / Task</div>
+                    <div class="gantt-timeline-cell" style="overflow: hidden;">${rulerHtml}</div>
+                  </div>
+                  ${rowsHtml.replace(/<div style="display:flex;align-items:center;background:rgba\(0,0,0,0\.04\);border-bottom:2px solid var\(--border-color,#e0e0e0\);">/g, `<div class="gantt-row gantt-phase-row">`)
+                            .replace(/<div style="min-width:220px;max-width:220px;padding:8px 12px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:\.5px;color:var\(--text\);">/g, `<div class="gantt-label-col" style="padding: 10px 12px; font-size: 11px; text-transform: uppercase;">`)
+                            .replace(/<div style="position:relative;height:36px;flex:1;min-width:\d+px;">/g, `<div class="gantt-timeline-cell">`)
+                            .replace(/<div style="display:flex;align-items:center;border-bottom:1px solid var\(--border-color,#e0e0e0\);">/g, `<div class="gantt-row">`)
+                            .replace(/<div style="min-width:220px;max-width:220px;padding:8px 12px 8px 24px;font-size:12px;color:var\(--text\);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="(.*?)">↳ (.*?)<\/div>/g, `<div class="gantt-label-col" style="padding: 10px 12px 10px 24px; font-size: 12px;" title="$1">↳ $2</div>`)
+                            .replace(/<div style="position:relative;height:34px;flex:1;min-width:\d+px;">/g, `<div class="gantt-timeline-cell" style="height:34px;">`)
+                  }
+                </div>
+              </div>`;
+
+          } catch (err) {
+            ganttContainer.innerHTML = '<div style="text-align:center;padding:40px;color:var(--danger);">Failed to load timeline</div>';
+            showToast(err.message || 'Failed to load Gantt data', 'danger');
+          }
+        };
+
+        projectSelect.addEventListener('change', () => renderGantt(projectSelect.value));
+
+        if (projects.length === 1) {
+          projectSelect.value = projects[0].id;
+          renderGantt(projects[0].id);
+        }
+
+      } catch (err) {
+        showToast(err.message || 'Failed to initialize page', 'danger');
+      }
+    });
+  </script>
+</body>
+</html>

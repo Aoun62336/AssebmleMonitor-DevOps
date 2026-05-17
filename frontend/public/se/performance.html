@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Progress | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/se/index.html"><span class="material-symbols-outlined">dashboard</span> Engineer Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Field Work</div>
+        <a href="/se/my-tasks.html"><span class="material-symbols-outlined">assignment</span> My Tasks</a>
+        <a href="/se/material-usage.html"><span class="material-symbols-outlined">inventory_2</span> Material Usage</a>
+        <div class="sidebar-section-label" style="padding-left:0">Attendance</div>
+        <a href="/se/check-in.html"><span class="material-symbols-outlined">login</span> Check-in / Check-out</a>
+        <a href="/se/attendance-history.html"><span class="material-symbols-outlined">schedule</span> Attendance History</a>
+        <div class="sidebar-section-label" style="padding-left:0">Reports</div>
+        <a href="/se/performance.html" class="active"><span class="material-symbols-outlined">trending_up</span> Performance Progress</a>
+        <a href="/se/gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">VP</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Vikram Patel</div>
+            <div class="sidebar-user-role">Site Engineer</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Performance Progress</div>
+            <div class="topbar-breadcrumb">SE &gt; <span>Performance</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">VP</div>
+        </div>
+      </header>
+      <div class="dash-content">
+        <div class="panel animate-in" style="margin-bottom: 20px; border-radius: 12px; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <div class="panel-body" style="display:flex; align-items:center; gap:16px; padding: 15px;">
+            <div style="background: var(--bg-alt); padding: 10px; border-radius: 10px;">
+              <span class="material-symbols-outlined" style="color: var(--primary); font-size: 20px;">folder_open</span>
+            </div>
+            <div style="flex-grow: 1;">
+              <label for="perfProjectSelect" style="display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 2px;">PROJECT ANALYTICS</label>
+              <select id="perfProjectSelect" class="form-select" style="border: none; padding: 0; font-size: 1rem; font-weight: 700; color: var(--text); background: transparent; cursor: pointer; min-width: 200px;">
+                <option value="">Select a project...</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="perfEmptyState" style="padding:60px 20px; text-align:center; color:var(--text-muted); background: var(--bg-alt); border-radius: 12px; border: 1px dashed var(--border);">
+          <span class="material-symbols-outlined" style="font-size: 40px; margin-bottom: 12px; opacity: 0.5;">analytics</span>
+          <p>Select a project to view performance data.</p>
+        </div>
+
+        <div id="perfContent" style="display:none;">
+          <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); gap: 16px;">
+            <div class="stat-card animate-in" style="border-radius: 12px; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+              <div class="stat-card-header">
+                <div>
+                  <div class="stat-card-label">Task Completion</div>
+                  <div class="stat-card-value" id="valTaskRate" style="color: var(--success); font-size: 1.5rem;">--%</div>
+                </div>
+                <div class="stat-card-icon" style="background: rgba(39, 174, 96, 0.1); color: var(--success);"><span class="material-symbols-outlined">task_alt</span></div>
+              </div>
+            </div>
+            <div class="stat-card animate-in" style="border-radius: 12px; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+              <div class="stat-card-header">
+                <div>
+                  <div class="stat-card-label">On-Time Rate</div>
+                  <div class="stat-card-value" id="valOnTime" style="color: var(--primary); font-size: 1.5rem;">--%</div>
+                </div>
+                <div class="stat-card-icon" style="background: rgba(52, 152, 219, 0.1); color: var(--primary);"><span class="material-symbols-outlined">timer</span></div>
+              </div>
+            </div>
+            <div class="stat-card animate-in" style="border-radius: 12px; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+              <div class="stat-card-header">
+                <div>
+                  <div class="stat-card-label">Attendance</div>
+                  <div class="stat-card-value" id="valAttendanceRate" style="color: #9b59b6; font-size: 1.5rem;">--%</div>
+                </div>
+                <div class="stat-card-icon" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;"><span class="material-symbols-outlined">calendar_today</span></div>
+              </div>
+            </div>
+            <div class="stat-card animate-in" style="border-radius: 12px; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+              <div class="stat-card-header">
+                <div>
+                  <div class="stat-card-label">Work Intensity</div>
+                  <div class="stat-card-value" id="valTotalHours" style="color: #e67e22; font-size: 1.5rem;">--h</div>
+                </div>
+                <div class="stat-card-icon" style="background: rgba(230, 126, 34, 0.1); color: #e67e22;"><span class="material-symbols-outlined">bolt</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <div class="panel animate-in" style="border-radius: 12px; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+              <div class="panel-header" style="border-bottom: 1px solid var(--border); padding: 15px 20px;"><span class="panel-title">Progress Breakdown</span></div>
+              <div class="panel-body" style="padding: 20px;">
+                <div class="progress-bar-wrapper" style="margin-bottom:15px;">
+                  <div class="progress-label" style="display:flex; justify-content:space-between; margin-bottom:8px; font-weight:600;"><span style="color:var(--text)">Tasks Completed</span><span id="lblTaskBar" style="color:var(--primary)">0/0</span></div>
+                  <div class="progress-track" style="height:10px; background:var(--bg-alt); border-radius:10px; overflow:hidden;"><div class="progress-fill green" id="barTaskRate" style="width:0%; height:100%; background:var(--success); border-radius:10px; transition:width 0.5s ease;"></div></div>
+                </div>
+                <div class="progress-bar-wrapper" style="margin-bottom:15px;">
+                  <div class="progress-label" style="display:flex; justify-content:space-between; margin-bottom:8px; font-weight:600;"><span style="color:var(--text)">On-Time Tasks</span><span id="lblOnTimeBar" style="color:var(--primary)">0/0</span></div>
+                  <div class="progress-track" style="height:10px; background:var(--bg-alt); border-radius:10px; overflow:hidden;"><div class="progress-fill blue" id="barOnTime" style="width:0%; height:100%; background:var(--primary); border-radius:10px; transition:width 0.5s ease;"></div></div>
+                </div>
+                <div class="progress-bar-wrapper">
+                  <div class="progress-label" style="display:flex; justify-content:space-between; margin-bottom:8px; font-weight:600;"><span style="color:var(--text)">Days Present (Last 30 Days)</span><span id="lblAttendanceBar" style="color:var(--primary)">0/30</span></div>
+                  <div class="progress-track" style="height:10px; background:var(--bg-alt); border-radius:10px; overflow:hidden;"><div class="progress-fill" id="barAttendance" style="width:0%; height:100%; background:#9b59b6; border-radius:10px; transition:width 0.5s ease;"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          requireAuth(['site_engineer']);
+          const user = getAuthUser();
+          if (user) {
+            const nameEl = document.querySelector('.sidebar-user-name');
+            const roleEl = document.querySelector('.sidebar-user-role');
+            const avatarEls = document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar');
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role.replace('_', ' ').toUpperCase();
+            if (avatarEls.length > 0) {
+              const initials = user.name.substring(0, 2).toUpperCase();
+              avatarEls.forEach(el => el.textContent = initials);
+            }
+          }
+
+          const projectSelect = document.getElementById('perfProjectSelect');
+          const perfContent = document.getElementById('perfContent');
+          const emptyState = document.getElementById('perfEmptyState');
+          
+          try {
+            const projects = await apiFetch('/v1/projects');
+            projectSelect.innerHTML = '<option value="">Select a Project</option>';
+            projects.forEach(p => {
+              const opt = document.createElement('option');
+              opt.value = p.id;
+              opt.textContent = p.name;
+              projectSelect.appendChild(opt);
+            });
+
+            if (projects.length === 1) {
+              projectSelect.value = projects[0].id;
+              projectSelect.parentElement.parentElement.style.display = 'none'; // hide if only 1
+              await loadPerformanceData(projects[0].id);
+            } else {
+              projectSelect.addEventListener('change', (e) => {
+                if (e.target.value) {
+                  loadPerformanceData(e.target.value);
+                } else {
+                  perfContent.style.display = 'none';
+                  emptyState.style.display = 'block';
+                }
+              });
+            }
+          } catch (err) {
+            console.error(err);
+            showToast('Failed to load projects', 'danger');
+          }
+
+          async function loadPerformanceData(projectId) {
+            try {
+              perfContent.style.display = 'none';
+              emptyState.style.display = 'block';
+              emptyState.textContent = 'Loading performance metrics...';
+
+              const [userTasks, attendanceData] = await Promise.all([
+                apiFetch(`/v1/tasks/assigned?project_id=${projectId}`),
+                apiFetch(`/v1/attendance/project/${projectId}`)
+              ]);
+
+              const userId = user.id || user.user_id || (user.user ? user.user.id : null);
+              
+              const userAttendance = attendanceData.filter(a => {
+                const uId = a.user_id || (a.user ? a.user.id : null);
+                if (!uId || !userId) return false;
+                return String(uId).toLowerCase() === String(userId).toLowerCase();
+              });
+
+              // Task Completion
+              const totalAssigned = userTasks.length;
+              const completedTasks = userTasks.filter(t => t.status === 'completed').length;
+              const completionRate = totalAssigned > 0 ? (completedTasks / totalAssigned) * 100 : 0;
+              
+              // On-Time Completion 
+              let onTimeCount = 0;
+              userTasks.forEach(t => {
+                 if (t.status === 'completed') {
+                     const due = t.due_date ? new Date(t.due_date) : null;
+                     const completed = t.completed_date ? new Date(t.completed_date) : null;
+                     if (due && completed && completed <= due) onTimeCount++;
+                     else if (!due) onTimeCount++; // If no due date, count as on-time for now
+                 }
+              });
+              const onTimeRate = completedTasks > 0 ? (onTimeCount / completedTasks) * 100 : 0;
+
+              // Attendance
+              const totalWorkingDays = 30; // Assuming last 30 days
+              const uniqueDays = new Set(userAttendance.map(a => a.attendance_date)).size;
+              const attendanceRate = Math.min((uniqueDays / totalWorkingDays) * 100, 100);
+
+              // Hours
+              const totalHours = userAttendance.reduce((sum, r) => sum + (parseFloat(r.total_hours) || 0), 0);
+
+              // Update DOM
+              document.getElementById('valTaskRate').textContent = Math.round(completionRate) + '%';
+              document.getElementById('valOnTime').textContent = Math.round(onTimeRate) + '%';
+              document.getElementById('valAttendanceRate').textContent = Math.round(attendanceRate) + '%';
+              document.getElementById('valTotalHours').textContent = totalHours.toFixed(1) + 'h';
+
+              document.getElementById('lblTaskBar').textContent = `${completedTasks} / ${totalAssigned}`;
+              document.getElementById('barTaskRate').style.width = completionRate + '%';
+
+              document.getElementById('lblOnTimeBar').textContent = `${onTimeCount} / ${completedTasks}`;
+              document.getElementById('barOnTime').style.width = onTimeRate + '%';
+
+              document.getElementById('lblAttendanceBar').textContent = `${uniqueDays} / ${totalWorkingDays}`;
+              document.getElementById('barAttendance').style.width = attendanceRate + '%';
+
+              emptyState.style.display = 'none';
+              perfContent.style.display = 'block';
+
+            } catch (err) {
+              console.error(err);
+              showToast('Failed to load metrics', 'danger');
+              emptyState.textContent = 'Error loading performance metrics.';
+            }
+          }
+        });
+        </script>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+</html>

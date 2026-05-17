@@ -1,0 +1,42 @@
+# ============================================================
+# AssembleMonitor — Python dependencies (pinned, Python 3.14 compatible)
+# ============================================================
+# Versions chosen for pre-built binary wheel availability on Python 3.14 / Windows.
+
+# --- Web framework ---
+fastapi==0.115.12
+uvicorn[standard]==0.34.2          # includes websockets + httptools
+python-multipart==0.0.20           # required for form/file uploads
+
+# --- Database ---
+sqlalchemy==2.0.40
+asyncpg==0.31.0                    # async PostgreSQL driver (runtime)
+psycopg2-binary==2.9.12            # sync driver used by Alembic
+alembic==1.15.2
+
+# --- Auth & security ---
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.3.0
+
+# --- Config ---
+pydantic==2.13.3
+pydantic-settings==2.9.1
+python-dotenv==1.1.0
+
+# --- HTTP client (for inter-service calls / webhooks) ---
+httpx==0.28.1
+
+# --- Utilities ---
+email-validator==2.2.0             # Pydantic EmailStr support
+python-slugify==8.0.4
+pillow==12.2.0                     # image processing (photo uploads)
+boto3==1.36.19                     # AWS S3 client
+
+# ============================================================
+# Development / testing (install separately via requirements-dev.txt)
+# ============================================================
+# pytest==8.3.5
+# pytest-asyncio==0.25.3
+# factory-boy==3.3.1
+# faker==37.1.0

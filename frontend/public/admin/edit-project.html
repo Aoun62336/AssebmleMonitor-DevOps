@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Project | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+                <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+                <a href="/admin/project-list.html"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html"><span class="material-symbols-outlined">account_balance</span> Budget Management</a>
+        <a href="/admin/expenses.html"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+                <a href="/admin/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">RK</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Rajesh Kumar</div>
+            <div class="sidebar-user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Edit Project</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>Edit Project</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">RK</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in"><h1>Edit Project</h1><p>Update project details, manager, and assigned site engineers.</p></div>
+        <div class="panel animate-in"><div class="panel-header"><span class="panel-title">Project Details & Assignments</span></div><div class="panel-body"><form data-project-form><div class="admin-form-grid"><div class="form-group"><label>Project Name</label><input id="projectName" type="text" class="form-control" placeholder="e.g. Skyline Residency Phase II"></div><div class="form-group"><label>Location</label><input id="projectLocation" type="text" class="form-control" placeholder="City, State"></div><div class="form-group"><label>Start Date</label><input id="projectStartDate" type="date" class="form-control"></div><div class="form-group"><label>Expected Completion</label><input id="projectEndDate" type="date" class="form-control"></div><div class="form-group"><label>Total Budget (Rs.)</label><input id="projectBudget" type="text" class="form-control" placeholder="e.g. 18,50,00,000"></div><div class="form-group"><label>Project Manager</label><select id="projectManager" class="form-select"><option value="">Select project manager</option></select></div><div class="form-group admin-form-span-full"><label>Site Engineers</label><div class="assignment-callout"><span class="material-symbols-outlined">group_add</span><div><strong>Assign one or more site engineers</strong><p>Search, select, and review assigned engineers without relying on Ctrl/Cmd multi-select.</p></div></div><div class="engineer-picker" data-engineer-picker><div class="engineer-picker-control"><div class="engineer-picker-tags" data-engineer-tags><span class="engineer-picker-placeholder">No site engineers selected yet.</span></div><div class="engineer-picker-actions"><input type="text" class="form-control engineer-picker-search" data-engineer-search placeholder="Search by engineer name"><button type="button" class="btn btn-outline engineer-picker-clear" data-clear-engineers>Clear</button></div></div><div class="engineer-picker-dropdown" data-engineer-options><!-- Dynamically populated from API --></div><div class="engineer-picker-summary"><span class="engineer-selection-count" data-selection-count>0 engineers selected</span><span class="text-muted">Selected engineers will receive access when the project is updated.</span></div><select class="form-select" multiple hidden data-native-engineers></select></div></div><div class="form-group"><label>Client</label><select id="projectClient" class="form-select"><option value="">Select client</option></select></div><div class="form-group"><label>Launch Priority</label><select id="projectPriority" class="form-select"><option>Standard</option><option>High Priority</option><option>Fast Track</option></select></div><div class="form-group admin-form-span-full"><label>Description</label><textarea id="projectDescription" class="form-control" rows="4" placeholder="Brief project scope, delivery expectations, and handover notes..."></textarea></div></div><div class="form-actions" style="display: flex; justify-content: space-between; align-items: center;"><div style="display: flex; gap: 8px;"><button type="submit" class="btn btn-primary" data-edit-project-submit><span class="material-symbols-outlined">save</span> Save Changes</button><button type="button" class="btn btn-outline" data-project-reset>Reset</button></div><button type="button" class="btn" style="background-color: var(--danger); border-color: var(--danger); color: white;" data-project-delete><span class="material-symbols-outlined">delete</span> Delete Project</button></div></form></div></div>
+        <!-- Custom Delete Confirmation Modal -->
+        <div id="deleteProjectModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(44, 62, 80, 0.7); z-index:2000; align-items:center; justify-content:center;">
+          <div style="background:var(--card); border-radius:12px; width:90%; max-width:420px; padding:36px; text-align:center; box-shadow:var(--shadow-xl);">
+            <span class="material-symbols-outlined" style="font-size:56px;color:var(--accent);display:block;margin-bottom:16px;">delete_forever</span>
+            <h3 style="margin:0 0 8px;font-size:20px;font-weight:700;color:var(--primary);">Delete Project?</h3>
+            <p id="deleteProjectNameDisplay" style="color:var(--text-secondary);margin-bottom:8px;font-size:15px;"></p>
+            <p style="color:var(--text-muted);margin-bottom:28px;font-size:13px;">This project will be permanently deleted. This action cannot be undone.</p>
+            <div style="display:flex;gap:12px;justify-content:center;">
+              <button id="cancelDeleteProject" class="btn btn-outline" style="min-width:100px;">Cancel</button>
+              <button id="confirmDeleteProject" class="btn btn-primary" style="min-width:130px;">Yes, Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!requireAuth(['admin'])) return;
+
+      const user = getAuthUser();
+      if (user && user.name) {
+        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const sidebarName = document.querySelector('.sidebar-user-name');
+        if (sidebarName) sidebarName.textContent = user.name;
+        document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar').forEach(el => el.textContent = initials);
+      }
+
+      const form = document.querySelector('[data-project-form]');
+      if (!form) return;
+
+      try {
+        const users = await apiFetch('/v1/users');
+        const pms = users.filter(u => u.role === 'project_manager');
+        const clients = users.filter(u => u.role === 'client');
+        const engineers = users.filter(u => u.role === 'site_engineer');
+
+        const pmSelect = document.getElementById('projectManager');
+        pmSelect.innerHTML = '<option value="">Select project manager</option>';
+        pms.forEach(pm => {
+          const opt = document.createElement('option');
+          opt.value = pm.id;
+          opt.textContent = pm.full_name;
+          pmSelect.appendChild(opt);
+        });
+
+        const clientSelect = document.getElementById('projectClient');
+        clientSelect.innerHTML = '<option value="">Select client</option>';
+        clients.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.full_name;
+          clientSelect.appendChild(opt);
+        });
+
+        const seDropdown = document.querySelector('[data-engineer-options]');
+        if (seDropdown) {
+          seDropdown.innerHTML = '';
+          engineers.forEach(se => {
+            const label = document.createElement('label');
+            label.className = 'engineer-option';
+            label.innerHTML = `
+              <input type="checkbox" value="${se.id}" data-name="${se.full_name}">
+              <span><strong>${se.full_name}</strong><small>${se.role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</small></span>
+            `;
+            seDropdown.appendChild(label);
+          });
+        }
+        
+        // Rebind the engineer picker UI logic now that checkboxes are added
+        const picker = document.querySelector('[data-engineer-picker]');
+        const tags = picker.querySelector('[data-engineer-tags]');
+        const search = picker.querySelector('[data-engineer-search]');
+        const clearButton = picker.querySelector('[data-clear-engineers]');
+        const summary = picker.querySelector('[data-selection-count]');
+        let checkboxes = Array.from(picker.querySelectorAll('input[type="checkbox"]'));
+        
+        function renderPicker() {
+          const selected = checkboxes.filter(cb => cb.checked);
+          tags.innerHTML = '';
+          if (!selected.length) {
+            tags.innerHTML = '<span class="engineer-picker-placeholder">No site engineers selected yet.</span>';
+          } else {
+            selected.forEach(cb => {
+              const chip = document.createElement('span');
+              chip.className = 'engineer-tag';
+              chip.innerHTML = `<span>${cb.dataset.name}</span><button type="button" aria-label="Remove">×</button>`;
+              chip.querySelector('button').addEventListener('click', () => { cb.checked = false; renderPicker(); });
+              tags.appendChild(chip);
+            });
+          }
+          checkboxes.forEach(cb => {
+            const option = cb.closest('.engineer-option');
+            if (option) option.classList.toggle('is-selected', cb.checked);
+          });
+          summary.textContent = `${selected.length} engineer${selected.length === 1 ? '' : 's'} selected`;
+        }
+
+        function filterPicker() {
+          const query = search.value.trim().toLowerCase();
+          checkboxes.forEach(cb => {
+            const option = cb.closest('.engineer-option');
+            const matches = !query || (option && option.textContent.toLowerCase().includes(query));
+            if (option) option.classList.toggle('is-hidden', !matches);
+          });
+        }
+
+        clearButton.addEventListener('click', () => {
+          search.value = '';
+          checkboxes.forEach(cb => cb.checked = false);
+          filterPicker();
+          renderPicker();
+        });
+
+        search.addEventListener('input', filterPicker);
+        checkboxes.forEach(cb => cb.addEventListener('change', renderPicker));
+        
+        renderPicker();
+        filterPicker();
+        
+      } catch (err) {
+        console.error('Failed to load users for assignment', err);
+        showToast('Failed to load users for assignment', 'danger');
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Validate before disabling the button (prevents phantom disabling)
+        const name = document.getElementById('projectName').value.trim();
+        if (!name) {
+          showToast('Project Name is required', 'warning');
+          return;
+        }
+
+        const pmId = document.getElementById('projectManager').value;
+        if (!pmId) {
+          showToast('Project Manager is required', 'warning');
+          return;
+        }
+
+        const clientId = document.getElementById('projectClient').value;
+        const picker = document.querySelector('[data-engineer-picker]');
+        const seCheckboxes = Array.from(picker.querySelectorAll('input[type="checkbox"]')).filter(cb => cb.checked);
+
+        const btn = form.querySelector('[data-create-project-submit]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = 'Creating...';
+        btn.disabled = true;
+
+        try {
+          const startDate = document.getElementById('projectStartDate').value || null;
+          const endDate = document.getElementById('projectEndDate').value || null;
+          const budgetStr = document.getElementById('projectBudget').value.replace(/,/g, '');
+          const budget = budgetStr ? parseFloat(budgetStr) : null;
+          const description = document.getElementById('projectDescription').value.trim();
+
+          const payload = {
+            name,
+            description: description || null,
+            location: document.getElementById('projectLocation').value.trim() || null,
+            status: 'planning',
+            start_date: startDate,
+            end_date: endDate,
+            budget
+          };
+
+          const project = await apiFetch('/v1/projects', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+
+          // Assign team — use allSettled so one failure doesn't block the rest
+          const assignments = [
+            { user_id: pmId, role: 'project_manager' }
+          ];
+          if (clientId) assignments.push({ user_id: clientId, role: 'client' });
+          seCheckboxes.forEach(cb => assignments.push({ user_id: cb.value, role: 'site_engineer' }));
+
+          await Promise.allSettled(assignments.map(assignment =>
+            apiFetch(`/v1/projects/${project.id}/assignments`, {
+              method: 'POST',
+              body: JSON.stringify(assignment)
+            })
+          ));
+
+          // Keep button disabled — success, redirect in 1.5s
+          showToast('Project created and team assigned successfully!', 'success');
+          setTimeout(() => window.location.href = 'project-list.html', 1500);
+        } catch (err) {
+          console.error('Failed to create project:', err);
+          showToast('Error: ' + err.message, 'danger');
+          // Only re-enable on actual project creation failure
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      });
+
+      
+      const resetBtn = document.querySelector('[data-project-reset]');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => form.reset());
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Progress | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Portfolio</div>
+      <nav class="sidebar-nav">
+        <a href="/client/index.html"><span class="material-symbols-outlined">dashboard</span> Client Dashboard</a>
+        <a href="/client/project-progress.html" class="active"><span class="material-symbols-outlined">analytics</span> Project Progress</a>
+        <a href="/client/phase-progress.html"><span class="material-symbols-outlined">step</span> Phase Progress</a>
+        <a href="/client/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <a href="/client/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt View</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">NS</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Neha Sharma</div>
+            <div class="sidebar-user-role">Client Director</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Project Progress</div>
+            <div class="topbar-breadcrumb">Client &gt; <span>Projects</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">NS</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in">
+          <h1>Project Progress</h1>
+          <p>Detailed task and phase breakdown of your projects.</p>
+        </div>
+
+        <div class="panel animate-in" style="margin-bottom: 20px;">
+          <div class="panel-body" style="display:flex; align-items:center; gap:16px;">
+            <label for="clientProjectSelect" style="font-weight:600; color:var(--text);">Select Project:</label>
+            <select id="clientProjectSelect" class="form-select" style="min-width:300px;">
+              <option value="">Loading projects...</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="clientProgressEmptyState" style="padding:40px;text-align:center;color:var(--text-muted);">
+          Select a project to view detailed progress.
+        </div>
+
+        <div id="clientProgressContent" style="display:none;">
+          <!-- Overall Progress -->
+          <div class="panel animate-in" style="margin-bottom: 20px;">
+            <div class="panel-header"><span class="panel-title">Overall Progress</span></div>
+            <div class="panel-body">
+              <div class="progress-bar-wrapper" style="margin-top:12px;margin-bottom:0">
+                <div class="progress-label"><span id="lblOverallProgress">Overall Completion</span><span id="valOverallProgress">--%</span></div>
+                <div class="progress-track"><div id="barOverallProgress" class="progress-fill" style="width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Breakdown -->
+          <div class="panel animate-in" style="margin-bottom: 20px;">
+            <div class="panel-header"><span class="panel-title">Task Breakdown</span></div>
+            <div class="panel-body">
+              <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.9rem; font-weight:600;">
+                <span style="color:var(--success);" id="lblCompleted">Completed: 0</span>
+                <span style="color:var(--info);" id="lblInProgress">In Progress: 0</span>
+                <span style="color:var(--warning);" id="lblNotStarted">Not Started: 0</span>
+                <span style="color:var(--danger);" id="lblDelayed">Delayed: 0</span>
+              </div>
+              <div style="display:flex; height:24px; border-radius:12px; overflow:hidden; background:var(--bg);">
+                <div id="barCompleted" style="width:0%; background:var(--success); transition:width 0.5s ease;"></div>
+                <div id="barInProgress" style="width:0%; background:var(--info); transition:width 0.5s ease;"></div>
+                <div id="barNotStarted" style="width:0%; background:var(--warning); transition:width 0.5s ease;"></div>
+                <div id="barDelayed" style="width:0%; background:var(--danger); transition:width 0.5s ease;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phases -->
+          <div id="phasesContainer"></div>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          requireAuth(['client']);
+          const user = getAuthUser();
+          if (user) {
+            const nameEl = document.querySelector('.sidebar-user-name');
+            const roleEl = document.querySelector('.sidebar-user-role');
+            const avatarEls = document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar');
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role.replace('_', ' ').toUpperCase();
+            if (avatarEls.length > 0) {
+              const initials = user.name.substring(0, 2).toUpperCase();
+              avatarEls.forEach(el => el.textContent = initials);
+            }
+          }
+
+          const projectSelect = document.getElementById('clientProjectSelect');
+          const content = document.getElementById('clientProgressContent');
+          const emptyState = document.getElementById('clientProgressEmptyState');
+
+          try {
+            const projects = await apiFetch('/v1/projects');
+            projectSelect.innerHTML = '<option value="">Select a Project</option>';
+            projects.forEach(p => {
+              const opt = document.createElement('option');
+              opt.value = p.id;
+              opt.textContent = p.name;
+              projectSelect.appendChild(opt);
+            });
+
+            if (projects.length === 1) {
+              projectSelect.value = projects[0].id;
+              projectSelect.parentElement.parentElement.style.display = 'none';
+              await loadProjectProgress(projects[0].id);
+            } else {
+              projectSelect.addEventListener('change', (e) => {
+                if (e.target.value) {
+                  loadProjectProgress(e.target.value);
+                } else {
+                  content.style.display = 'none';
+                  emptyState.style.display = 'block';
+                }
+              });
+            }
+          } catch (err) {
+            console.error(err);
+            showToast('Failed to load projects', 'danger');
+            projectSelect.innerHTML = '<option value="">Error loading</option>';
+          }
+
+          async function loadProjectProgress(projectId) {
+            try {
+              content.style.display = 'none';
+              emptyState.style.display = 'block';
+              emptyState.textContent = 'Loading progress...';
+
+              const [overviews, ganttData] = await Promise.all([
+                apiFetch('/v1/analytics/overview'),
+                apiFetch(`/v1/analytics/gantt?project_id=${projectId}`)
+              ]);
+
+              const overview = overviews.find(o => String(o.project_id) === String(projectId));
+              
+              if (overview) {
+                // Overall Progress
+                const pct = Math.round(overview.progress_pct || 0);
+                document.getElementById('valOverallProgress').textContent = pct + '%';
+                document.getElementById('barOverallProgress').style.width = pct + '%';
+
+                // Task Breakdown
+                const ts = overview.task_stats || { total: 0, completed: 0, in_progress: 0, not_started: 0, delayed: 0 };
+                document.getElementById('lblCompleted').textContent = 'Completed: ' + ts.completed;
+                document.getElementById('lblInProgress').textContent = 'In Progress: ' + ts.in_progress;
+                document.getElementById('lblNotStarted').textContent = 'Not Started: ' + ts.not_started;
+                document.getElementById('lblDelayed').textContent = 'Delayed: ' + ts.delayed;
+
+                const t = ts.total > 0 ? ts.total : 1;
+                document.getElementById('barCompleted').style.width = ((ts.completed / t) * 100) + '%';
+                document.getElementById('barInProgress').style.width = ((ts.in_progress / t) * 100) + '%';
+                document.getElementById('barNotStarted').style.width = ((ts.not_started / t) * 100) + '%';
+                document.getElementById('barDelayed').style.width = ((ts.delayed / t) * 100) + '%';
+              }
+
+              // Phases and Tasks
+              const phasesContainer = document.getElementById('phasesContainer');
+              phasesContainer.innerHTML = '';
+              
+              if (ganttData && ganttData.length > 0) {
+                const tasksByPhase = {};
+                ganttData.forEach(task => {
+                  const pName = task.phase_name || 'Unassigned Phase';
+                  if (!tasksByPhase[pName]) tasksByPhase[pName] = [];
+                  tasksByPhase[pName].push(task);
+                });
+
+                for (const [phase, tasks] of Object.entries(tasksByPhase)) {
+                  const phasePanel = document.createElement('div');
+                  phasePanel.className = 'panel animate-in';
+                  phasePanel.style.marginBottom = '20px';
+                  
+                  let tasksHtml = tasks.map(task => {
+                    let badgeClass = 'pending';
+                    if (task.status === 'Completed') badgeClass = 'progress';
+                    else if (task.status === 'Delayed') badgeClass = 'overdue';
+                    else if (task.status === 'In Progress') badgeClass = 'active';
+
+                    return `
+                      <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--border);">
+                        <div>
+                          <div style="font-weight:600; color:var(--text);">${task.title}</div>
+                          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">${formatShortDate(task.start_date)} to ${formatShortDate(task.end_date)}</div>
+                        </div>
+                        <div><span class="status-badge ${badgeClass}">${task.status}</span></div>
+                      </div>
+                    `;
+                  }).join('');
+
+                  phasePanel.innerHTML = `
+                    <div class="panel-header"><span class="panel-title">${phase}</span></div>
+                    <div class="panel-body" style="padding:0">
+                      ${tasksHtml}
+                    </div>
+                  `;
+                  phasesContainer.appendChild(phasePanel);
+                }
+              } else {
+                phasesContainer.innerHTML = '<div class="panel"><div class="panel-body" style="text-align:center;color:var(--text-muted)">No tasks found for this project.</div></div>';
+              }
+
+              emptyState.style.display = 'none';
+              content.style.display = 'block';
+
+            } catch (err) {
+              console.error(err);
+              showToast('Failed to load project progress', 'danger');
+              emptyState.textContent = 'Error loading project progress.';
+            }
+          }
+        });
+        </script>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+</html>

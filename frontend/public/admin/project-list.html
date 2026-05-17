@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project List | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+                <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+                <a href="/admin/project-list.html" class="active"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html"><span class="material-symbols-outlined">account_balance</span> Budget Management</a>
+        <a href="/admin/expenses.html"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+                <a href="/admin/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">RK</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Rajesh Kumar</div>
+            <div class="sidebar-user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Project List</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>Project List</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">RK</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in"><h1>Project List</h1><p>All registered construction projects across the enterprise.</p></div>
+        <div class="stats-grid" style="margin-bottom:24px">
+          <div class="stat-card animate-in"><div class="stat-card-header"><div><div class="stat-card-label">Total</div><div class="stat-card-value" id="statTotal">-</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">architecture</span></div></div></div>
+          <div class="stat-card animate-in"><div class="stat-card-header"><div><div class="stat-card-label">Active</div><div class="stat-card-value" id="statActive">-</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">play_circle</span></div></div></div>
+          <div class="stat-card animate-in"><div class="stat-card-header"><div><div class="stat-card-label">Completed</div><div class="stat-card-value" id="statCompleted">-</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">check_circle</span></div></div></div>
+          <div class="stat-card animate-in"><div class="stat-card-header"><div><div class="stat-card-label">Budget</div><div class="stat-card-value" id="statBudget">-</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">account_balance</span></div></div></div>
+        </div>
+
+        <div class="panel animate-in">
+          <div class="panel-header">
+            <span class="panel-title">All Projects</span>
+            <span class="panel-action"><a href="create-project.html" style="color:var(--accent)">+ New Project</a></span>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <table class="task-table" id="projectsTable">
+              <thead>
+                <tr>
+                  <th>Project</th><th>Location</th><th>PM</th><th>Budget</th><th>Progress</th><th>Status</th><th style="text-align:right">Edit</th>
+                </tr>
+              </thead>
+              <tbody id="projectsTbody">
+                <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px">Loading projects...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Edit Project Modal -->
+        <div class="user-modal-backdrop" id="editProjectModal" hidden>
+          <div class="user-modal" style="max-width:600px;width:95%;">
+            <div class="user-modal-header">
+              <div>
+                <h3>Edit Project</h3>
+                <p>Update project details. Changes are saved to the database immediately.</p>
+              </div>
+              <button type="button" class="user-modal-close" id="closeEditProjectModal">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <form id="editProjectForm">
+              <div class="admin-form-grid">
+                <div class="form-group">
+                  <label>Project Name</label>
+                  <input id="epName" name="name" type="text" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Location</label>
+                  <input id="epLocation" name="location" type="text" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Start Date</label>
+                  <input id="epStartDate" name="start_date" type="date" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>End Date</label>
+                  <input id="epEndDate" name="end_date" type="date" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Budget (₹)</label>
+                  <input id="epBudget" name="budget" type="number" step="0.01" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Status</label>
+                  <select id="epStatus" name="status" class="form-select">
+                    <option value="planning">Planning</option>
+                    <option value="active">Active</option>
+                    <option value="on_hold">On Hold</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Project Manager</label>
+                  <select id="epManager" name="manager_id" class="form-select">
+                    <option value="">— No Change —</option>
+                  </select>
+                </div>
+                <div class="form-group admin-form-span-full">
+                  <label>Description</label>
+                  <textarea id="epDescription" name="description" class="form-control" rows="3"></textarea>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="epSaveBtn">Save Changes</button>
+                <button type="button" class="btn btn-outline" id="cancelEditProject">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!requireAuth(['admin'])) return;
+      
+      const user = getAuthUser();
+      if (user && user.name) {
+        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const sidebarName = document.querySelector('.sidebar-user-name');
+        if (sidebarName) sidebarName.textContent = user.name;
+        document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar').forEach(el => el.textContent = initials);
+      }
+
+      const tbody = document.getElementById('projectsTbody');
+      const editModal = document.getElementById('editProjectModal');
+      const editForm = document.getElementById('editProjectForm');
+      let allProjects = [];
+      let currentEditId = null;
+
+      // ── Utility ─────────────────────────────────────────────
+      function fmtBudget(b) {
+        if (!b) return '-';
+        return b >= 10000000 ? `₹${(b / 10000000).toFixed(2)} Cr` : `₹${Number(b).toLocaleString('en-IN')}`;
+      }
+
+      function getBadge(status) {
+        const s = (status || '').toLowerCase();
+        if (s === 'active') return ['active', 'Active'];
+        if (s === 'completed') return ['success', 'Completed'];
+        if (s === 'cancelled') return ['overdue', 'Cancelled'];
+        if (s === 'on_hold') return ['pending', 'On Hold'];
+        return ['pending', status.charAt(0).toUpperCase() + status.slice(1)];
+      }
+
+      // ── Render ───────────────────────────────────────────────
+      function renderProjects(projects) {
+        if (!projects.length) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px">No projects found.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = projects.map(p => {
+          const [cls, label] = getBadge(p.status);
+          return `
+            <tr>
+              <td><strong>${p.name}</strong></td>
+              <td>${p.location || '-'}</td>
+              <td>${p.manager_name || '-'}</td>
+              <td>${fmtBudget(p.budget)}</td>
+              <td>-</td>
+              <td><span class="status-badge ${cls}">${label}</span></td>
+              <td style="text-align:right">
+                <button type="button" class="table-action-btn" data-edit-project="${p.id}">Edit</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        tbody.querySelectorAll('[data-edit-project]').forEach(btn => {
+          btn.addEventListener('click', () => openEditModal(btn.dataset.editProject));
+        });
+      }
+
+      // ── Edit Modal ───────────────────────────────────────────
+      async function openEditModal(projectId) {
+        const p = allProjects.find(x => String(x.id) === String(projectId));
+        if (!p) return;
+        currentEditId = p.id;
+
+        document.getElementById('epName').value        = p.name || '';
+        document.getElementById('epLocation').value    = p.location || '';
+        document.getElementById('epStartDate').value   = p.start_date || '';
+        document.getElementById('epEndDate').value     = p.end_date || '';
+        document.getElementById('epBudget').value      = p.budget || '';
+        document.getElementById('epStatus').value      = p.status || 'planning';
+        document.getElementById('epDescription').value = p.description || '';
+
+        // Load PM options
+        try {
+          const users = await apiFetch('/v1/users?role=project_manager');
+          const sel = document.getElementById('epManager');
+          sel.innerHTML = '<option value="">— No Change —</option>';
+          users.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u.id;
+            opt.textContent = u.full_name;
+            if (u.id === p.manager_id) opt.selected = true;
+            sel.appendChild(opt);
+          });
+        } catch (e) { console.error(e); }
+
+        editModal.hidden = false;
+      }
+
+      function closeModal() {
+        editModal.hidden = true;
+        currentEditId = null;
+      }
+
+      document.getElementById('closeEditProjectModal').addEventListener('click', closeModal);
+      document.getElementById('cancelEditProject').addEventListener('click', closeModal);
+      editModal.addEventListener('click', e => { if (e.target === editModal) closeModal(); });
+
+      editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentEditId) return;
+
+        const saveBtn = document.getElementById('epSaveBtn');
+        saveBtn.textContent = 'Saving...';
+        saveBtn.disabled = true;
+
+        const budgetVal = document.getElementById('epBudget').value;
+        const payload = {
+          name:        document.getElementById('epName').value.trim() || undefined,
+          location:    document.getElementById('epLocation').value.trim() || null,
+          start_date:  document.getElementById('epStartDate').value || null,
+          end_date:    document.getElementById('epEndDate').value || null,
+          budget:      budgetVal ? parseFloat(budgetVal) : null,
+          status:      document.getElementById('epStatus').value,
+          description: document.getElementById('epDescription').value.trim() || null,
+        };
+
+        try {
+          await apiFetch(`/v1/projects/${currentEditId}`, {
+            method: 'PATCH',
+            body: JSON.stringify(payload)
+          });
+
+          // Assign new PM if selected
+          const newPmId = document.getElementById('epManager').value;
+          if (newPmId) {
+            try {
+              await apiFetch(`/v1/projects/${currentEditId}/assignments`, {
+                method: 'POST',
+                body: JSON.stringify({ user_id: newPmId, role: 'project_manager' })
+              });
+            } catch (assignErr) {
+              // Might already be assigned — OK
+            }
+          }
+
+          showToast('Project updated successfully', 'success');
+          closeModal();
+          await loadProjects();
+        } catch (err) {
+          showToast('Failed to update: ' + err.message, 'danger');
+        } finally {
+          saveBtn.textContent = 'Save Changes';
+          saveBtn.disabled = false;
+        }
+      });
+
+      // ── Load ─────────────────────────────────────────────────
+      async function loadProjects() {
+        try {
+          const [projects, overviews] = await Promise.all([
+            apiFetch('/v1/projects'),
+            apiFetch('/v1/analytics/overview').catch(() => [])
+          ]);
+          allProjects = projects;
+
+          const activeCount    = projects.filter(p => p.status === 'active').length;
+          const completedCount = projects.filter(p => p.status === 'completed').length;
+          const totalBudget    = projects.reduce((s, p) => s + (p.budget || 0), 0);
+
+          document.getElementById('statTotal').textContent     = projects.length < 10 ? `0${projects.length}` : projects.length;
+          document.getElementById('statActive').textContent    = activeCount < 10 ? `0${activeCount}` : activeCount;
+          document.getElementById('statCompleted').textContent = completedCount < 10 ? `0${completedCount}` : completedCount;
+          document.getElementById('statBudget').textContent    = fmtBudget(totalBudget);
+
+          renderProjects(projects);
+        } catch (err) {
+          console.error('Failed to load projects:', err);
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:red;padding:20px">Error loading projects: ${err.message}</td></tr>`;
+        }
+      }
+
+      await loadProjects();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Tasks | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/se/index.html"><span class="material-symbols-outlined">dashboard</span> Engineer Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Field Work</div>
+        <a href="/se/my-tasks.html" class="active"><span class="material-symbols-outlined">assignment</span> My Tasks</a>
+        <a href="/se/material-usage.html"><span class="material-symbols-outlined">inventory_2</span> Material Usage</a>
+        <div class="sidebar-section-label" style="padding-left:0">Attendance</div>
+        <a href="/se/check-in.html"><span class="material-symbols-outlined">login</span> Check-in / Check-out</a>
+        <a href="/se/attendance-history.html"><span class="material-symbols-outlined">schedule</span> Attendance History</a>
+        <div class="sidebar-section-label" style="padding-left:0">Reports</div>
+        <a href="/se/performance.html"><span class="material-symbols-outlined">trending_up</span> Performance Progress</a>
+        <a href="/se/gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">VP</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Vikram Patel</div>
+            <div class="sidebar-user-role">Site Engineer</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">My Tasks</div>
+            <div class="topbar-breadcrumb">SE &gt; <span>My Tasks</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">VP</div>
+        </div>
+      </header>
+      <div class="dash-content">
+<div class="dash-welcome animate-in"><h1>My Tasks</h1><p>Tasks assigned exclusively to you.</p></div><div class="panel animate-in"><div class="panel-header"><span class="panel-title">Your Assignments</span></div><div class="panel-body" style="padding:0"><table class="task-table" id="seTaskTable"><thead><tr><th>Task</th><th>Phase</th><th>Due Date</th><th>Priority</th><th>Status</th></tr></thead><tbody><tr><td colspan="5" style="text-align:center;padding:20px;">Loading tasks...</td></tr></tbody></table></div></div>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!requireAuth(['site_engineer', 'admin', 'project_manager'])) return;
+
+      const user = getAuthUser();
+      if (user && user.name) {
+        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const sidebarName = document.querySelector('.sidebar-user-name');
+        if (sidebarName) sidebarName.textContent = user.name;
+        document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar').forEach(el => el.textContent = initials);
+      }
+
+      const tbody = document.querySelector('#seTaskTable tbody');
+      if (!tbody) return;
+      
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;">Loading tasks...</td></tr>';
+
+      try {
+        const projects = await apiFetch('/v1/projects');
+        let allTasks = [];
+        
+        // Fetch tasks for all assigned projects
+        for (const proj of projects) {
+          try {
+            const phases = await apiFetch(`/v1/phases/project/${proj.id}`);
+            for (const phase of phases) {
+              const tasks = await apiFetch(`/v1/tasks/phase/${phase.id}`);
+              // Filter by assigned_to
+              const myTasks = tasks.filter(t => t.assigned_to === user.id);
+              allTasks = allTasks.concat(myTasks);
+            }
+          } catch (err) {
+            console.error(`Error loading tasks for project ${proj.id}`, err);
+          }
+        }
+        
+        if (allTasks.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px">No tasks assigned to you right now.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = allTasks.map(t => {
+          const dueDisplay = formatShortDate(t.due_date);
+          
+          let priorityClass = 'pending';
+          if (t.priority === 'high') priorityClass = 'overdue';
+          else if (t.priority === 'low') priorityClass = 'progress';
+          
+          const priorityText = t.priority ? t.priority.charAt(0).toUpperCase() + t.priority.slice(1) : 'Medium';
+          
+          let completedSpan = '';
+          if (t.status === 'completed' && t.completed_date) {
+            const compDisplay = formatShortDate(t.completed_date);
+            completedSpan = `<span class="completion-date" style="display:inline-block;margin-left:8px;font-size:0.75rem;color:var(--text-muted)">(${compDisplay})</span>`;
+          } else {
+            completedSpan = `<span class="completion-date" style="display:none;margin-left:8px;font-size:0.75rem;color:var(--text-muted)"></span>`;
+          }
+
+          return `
+            <tr>
+              <td><strong>${t.name}</strong></td>
+              <td>${t.phase_name || '-'}</td>
+              <td>${dueDisplay}</td>
+              <td><span class="status-badge ${priorityClass}">${priorityText}</span></td>
+              <td>
+                <div class="status-update-wrapper">
+                  <select class="form-select se-status-select" data-task-id="${t.id}">
+                    <option value="not_started" ${t.status === 'not_started' ? 'selected' : ''}>Not Started</option>
+                    <option value="in_progress" ${t.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="completed" ${t.status === 'completed' ? 'selected' : ''}>Completed</option>
+                  </select>
+                  ${completedSpan}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        // Attach event listeners for status updates
+        const selects = document.querySelectorAll(".se-status-select");
+        selects.forEach(select => {
+          select.addEventListener("change", async function() {
+            const taskId = this.dataset.taskId;
+            const newStatus = this.value;
+            const wrapper = this.closest('.status-update-wrapper');
+            const dateSpan = wrapper.querySelector('.completion-date');
+            
+            // disable during save
+            this.disabled = true;
+            
+            try {
+              const updatedTask = await apiFetch(`/v1/tasks/${taskId}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: newStatus })
+              });
+              
+              let saveMsg = wrapper.querySelector('.save-msg');
+              if (!saveMsg) {
+                saveMsg = document.createElement("div");
+                saveMsg.className = 'save-msg';
+                saveMsg.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;color:var(--success)">check_circle</span> <span style="color:var(--success);font-size:0.75rem">Saved</span>';
+                saveMsg.style.cssText = "display:flex; align-items:center; gap:4px; width:100%; margin-top:6px;";
+                wrapper.appendChild(saveMsg);
+              } else {
+                saveMsg.style.display = 'flex';
+              }
+              
+              setTimeout(() => { if(saveMsg) saveMsg.style.display = 'none'; }, 2000);
+
+              if (newStatus === "completed") {
+                const completedDate = updatedTask.completed_date ? new Date(updatedTask.completed_date) : new Date();
+                dateSpan.textContent = '(' + formatShortDate(completedDate) + ')';
+                dateSpan.style.display = 'inline-block';
+              } else {
+                dateSpan.textContent = '';
+                dateSpan.style.display = 'none';
+              }
+            } catch (err) {
+              console.error('Failed to update task:', err);
+              showToast('Error updating task status: ' + err.message, 'danger');
+            } finally {
+              this.disabled = false;
+            }
+          });
+        });
+
+      } catch (err) {
+        console.error('Failed to load tasks:', err);
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;padding:20px">Error loading tasks: ${err.message}</td></tr>`;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Full Analytics | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+                <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+                <a href="/admin/project-list.html"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html"><span class="material-symbols-outlined">account_balance</span> Budget Management</a>
+        <a href="/admin/expenses.html"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+                <a href="/admin/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html" class="active"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">RK</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Rajesh Kumar</div>
+            <div class="sidebar-user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Full Analytics</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>Full Analytics</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">RK</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in">
+          <h1>Full Analytics Dashboard</h1>
+          <p>Enterprise-wide data insights and performance metrics.</p>
+        </div>
+
+        <div class="panel animate-in" style="margin-bottom: 20px;">
+          <div class="panel-body" style="display:flex; align-items:center; gap:16px;">
+            <label for="analyticsProjectSelect" style="font-weight:600; color:var(--text);">Select Project:</label>
+            <select id="analyticsProjectSelect" class="form-select" style="min-width:300px;">
+              <option value="">Loading projects...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="analyticsStatsGrid" style="display:none;">
+          <!-- Overall Progress -->
+          <div class="stat-card animate-in">
+            <div class="stat-card-header">
+              <div>
+                <div class="stat-card-label">Overall Progress</div>
+                <div class="stat-card-value" id="valProgress">--%</div>
+              </div>
+              <div class="stat-card-icon"><span class="material-symbols-outlined">monitoring</span></div>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;" id="descProgress">-- total tasks</div>
+          </div>
+          <!-- Budget Used -->
+          <div class="stat-card animate-in">
+            <div class="stat-card-header">
+              <div>
+                <div class="stat-card-label">Budget Used</div>
+                <div class="stat-card-value" id="valBudget">--%</div>
+              </div>
+              <div class="stat-card-icon"><span class="material-symbols-outlined">account_balance_wallet</span></div>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;" id="descBudget">-- remaining</div>
+          </div>
+          <!-- Materials -->
+          <div class="stat-card animate-in">
+            <div class="stat-card-header">
+              <div>
+                <div class="stat-card-label">Materials</div>
+                <div class="stat-card-value" id="valMaterials" style="font-size: 1.5rem;">-- types</div>
+              </div>
+              <div class="stat-card-icon"><span class="material-symbols-outlined">inventory_2</span></div>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;" id="descMaterials">-- low stock</div>
+          </div>
+          <!-- Attendance -->
+          <div class="stat-card animate-in">
+            <div class="stat-card-header">
+              <div>
+                <div class="stat-card-label">Attendance</div>
+                <div class="stat-card-value" id="valAttendance" style="font-size: 1.5rem;">-- check-ins</div>
+              </div>
+              <div class="stat-card-icon"><span class="material-symbols-outlined">group</span></div>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;" id="descAttendance">-- hours</div>
+          </div>
+        </div>
+
+        <div class="panel animate-in" id="analyticsTaskPanel" style="display:none; margin-top:20px;">
+          <div class="panel-header">
+            <span class="panel-title">Task Breakdown</span>
+          </div>
+          <div class="panel-body">
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.9rem; font-weight:600;">
+              <span style="color:var(--success);" id="lblCompleted">Completed: 0</span>
+              <span style="color:var(--info);" id="lblInProgress">In Progress: 0</span>
+              <span style="color:var(--warning);" id="lblNotStarted">Not Started: 0</span>
+              <span style="color:var(--danger);" id="lblDelayed">Delayed: 0</span>
+            </div>
+            <div style="display:flex; height:24px; border-radius:12px; overflow:hidden; background:var(--bg);">
+              <div id="barCompleted" style="width:0%; background:var(--success); transition:width 0.5s ease;"></div>
+              <div id="barInProgress" style="width:0%; background:var(--info); transition:width 0.5s ease;"></div>
+              <div id="barNotStarted" style="width:0%; background:var(--warning); transition:width 0.5s ease;"></div>
+              <div id="barDelayed" style="width:0%; background:var(--danger); transition:width 0.5s ease;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="analyticsEmptyState" style="padding:40px;text-align:center;color:var(--text-muted);">
+          Select a project to view analytics.
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          requireAuth(['project_manager', 'admin']);
+          const user = getAuthUser();
+          if (user) {
+            const nameEl = document.querySelector('.sidebar-user-name');
+            const roleEl = document.querySelector('.sidebar-user-role');
+            const avatarEls = document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar');
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role.replace('_', ' ').toUpperCase();
+            if (avatarEls.length > 0) {
+              const initials = user.name.substring(0, 2).toUpperCase();
+              avatarEls.forEach(el => el.textContent = initials);
+            }
+          }
+
+          const projectSelect = document.getElementById('analyticsProjectSelect');
+          const statsGrid = document.getElementById('analyticsStatsGrid');
+          const taskPanel = document.getElementById('analyticsTaskPanel');
+          const emptyState = document.getElementById('analyticsEmptyState');
+          
+          let overviews = [];
+
+          try {
+            overviews = await apiFetch('/v1/analytics/overview');
+            projectSelect.innerHTML = '<option value="">Select a Project</option>';
+            overviews.forEach(p => {
+              const opt = document.createElement('option');
+              opt.value = p.project_id;
+              opt.textContent = p.project_name;
+              projectSelect.appendChild(opt);
+            });
+          } catch (err) {
+            console.error('Failed to load overview:', err);
+            showToast('Failed to load projects', 'danger');
+            projectSelect.innerHTML = '<option value="">Error loading projects</option>';
+          }
+
+          projectSelect.addEventListener('change', async () => {
+            const pid = projectSelect.value;
+            if (!pid) {
+              statsGrid.style.display = 'none';
+              taskPanel.style.display = 'none';
+              emptyState.style.display = 'block';
+              return;
+            }
+
+            try {
+              emptyState.style.display = 'none';
+              statsGrid.style.display = 'grid';
+              taskPanel.style.display = 'block';
+
+              // 1. Get overview data for this project
+              const projectOverview = overviews.find(o => String(o.project_id) === String(pid));
+              if (projectOverview) {
+                document.getElementById('valProgress').textContent = Math.round(projectOverview.progress_pct) + '%';
+                const ts = projectOverview.task_stats || { total: 0, completed: 0, in_progress: 0, not_started: 0, delayed: 0 };
+                document.getElementById('descProgress').textContent = ts.total + ' total tasks';
+                
+                // Update task breakdown
+                document.getElementById('lblCompleted').textContent = 'Completed: ' + ts.completed;
+                document.getElementById('lblInProgress').textContent = 'In Progress: ' + ts.in_progress;
+                document.getElementById('lblNotStarted').textContent = 'Not Started: ' + ts.not_started;
+                document.getElementById('lblDelayed').textContent = 'Delayed: ' + ts.delayed;
+
+                const t = ts.total > 0 ? ts.total : 1;
+                document.getElementById('barCompleted').style.width = ((ts.completed / t) * 100) + '%';
+                document.getElementById('barInProgress').style.width = ((ts.in_progress / t) * 100) + '%';
+                document.getElementById('barNotStarted').style.width = ((ts.not_started / t) * 100) + '%';
+                document.getElementById('barDelayed').style.width = ((ts.delayed / t) * 100) + '%';
+              }
+
+              // Set default values while loading
+              document.getElementById('valBudget').textContent = '...';
+              document.getElementById('descBudget').textContent = 'Loading...';
+              document.getElementById('valMaterials').textContent = '...';
+              document.getElementById('descMaterials').textContent = 'Loading...';
+              document.getElementById('valAttendance').textContent = '...';
+              document.getElementById('descAttendance').textContent = 'Loading...';
+
+              // 2. Fetch the other 3 endpoints concurrently
+              const [budget, materials, attendance] = await Promise.all([
+                apiFetch(`/v1/analytics/budget?project_id=${pid}`),
+                apiFetch(`/v1/analytics/materials?project_id=${pid}`),
+                apiFetch(`/v1/analytics/attendance-summary?project_id=${pid}`)
+              ]);
+
+              // Update Budget
+              if (budget) {
+                document.getElementById('valBudget').textContent = Math.round(budget.budget_used_pct || 0) + '%';
+                document.getElementById('descBudget').textContent = '₹' + (budget.remaining_budget || 0).toLocaleString() + ' remaining';
+              }
+
+              // Update Materials
+              if (materials) {
+                document.getElementById('valMaterials').textContent = (materials.total_material_types || 0) + ' types';
+                document.getElementById('descMaterials').textContent = (materials.low_stock_items || 0) + ' low stock';
+              }
+
+              // Update Attendance
+              if (attendance) {
+                document.getElementById('valAttendance').textContent = (attendance.total_checkins || 0) + ' check-ins';
+                document.getElementById('descAttendance').textContent = (attendance.total_hours_logged || 0) + ' hours';
+              }
+
+            } catch (err) {
+              console.error('Error fetching analytics:', err);
+              showToast('Failed to load project analytics', 'danger');
+            }
+          });
+        });
+        </script>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+</html>

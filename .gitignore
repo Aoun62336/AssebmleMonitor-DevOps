@@ -1,0 +1,71 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+env/
+
+# Build output
+dist/
+build/
+*.egg-info/
+
+# Environment & secrets
+.env
+*.env
+backend/.env
+frontend/.env
+terraform.tfvars
+*.tfvars
+*.tfvars.json
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Docker / local volumes
+docker-data/
+postgres-data/
+pgdata/
+
+# Logs & temp files
+*.log
+migration_log.txt
+migration_error.txt
+
+# Test / debug scripts (root-level one-offs)
+test_*.py
+check_*.py
+reset_*.py
+get_*.py
+seed_*.py
+debug_*.py
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+#docs
+docs/

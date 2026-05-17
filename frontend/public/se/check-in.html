@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check-in / Check-out | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/se/index.html"><span class="material-symbols-outlined">dashboard</span> Engineer Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Field Work</div>
+        <a href="/se/my-tasks.html"><span class="material-symbols-outlined">assignment</span> My Tasks</a>
+        <a href="/se/material-usage.html"><span class="material-symbols-outlined">inventory_2</span> Material Usage</a>
+        <div class="sidebar-section-label" style="padding-left:0">Attendance</div>
+        <a href="/se/check-in.html" class="active"><span class="material-symbols-outlined">login</span> Check-in / Check-out</a>
+        <a href="/se/attendance-history.html"><span class="material-symbols-outlined">schedule</span> Attendance History</a>
+        <div class="sidebar-section-label" style="padding-left:0">Reports</div>
+        <a href="/se/performance.html"><span class="material-symbols-outlined">trending_up</span> Performance Progress</a>
+        <a href="/se/gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">VP</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Vikram Patel</div>
+            <div class="sidebar-user-role">Site Engineer</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Check-in / Check-out</div>
+            <div class="topbar-breadcrumb">SE &gt; <span>Check-in</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">VP</div>
+        </div>
+      </header>
+      <div class="dash-content">
+<div class="dash-welcome animate-in"><h1>Check-in / Check-out</h1><p>Mark your daily attendance.</p></div><div class="dash-grid-equal"><div class="panel animate-in"><div class="panel-body" style="text-align:center;padding:48px"><span class="material-symbols-outlined" style="font-size:64px;color:var(--success);display:block;margin-bottom:16px">login</span><h2 style="color:var(--primary);margin-bottom:8px">Check In</h2><p style="color:var(--text-muted);margin-bottom:24px">Record your arrival</p><button class="btn btn-primary btn-lg"><span class="material-symbols-outlined">check_circle</span> Check In Now</button><p style="margin-top:16px;font-size:0.813rem;color:var(--success);font-weight:600">✓ Checked in at 08:30 AM</p></div></div><div class="panel animate-in"><div class="panel-body" style="text-align:center;padding:48px"><span class="material-symbols-outlined" style="font-size:64px;color:var(--accent);display:block;margin-bottom:16px">logout</span><h2 style="color:var(--primary);margin-bottom:8px">Check Out</h2><p style="color:var(--text-muted);margin-bottom:24px">Record your departure</p><button class="btn btn-outline btn-lg"><span class="material-symbols-outlined">exit_to_app</span> Check Out Now</button></div></div></div>
+      </div>
+    </div>
+  </div>
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!requireAuth(['site_engineer', 'admin', 'project_manager'])) return;
+
+      const user = getAuthUser();
+      if (user && user.name) {
+        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const sidebarName = document.querySelector('.sidebar-user-name');
+        if (sidebarName) sidebarName.textContent = user.name;
+        document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar').forEach(el => el.textContent = initials);
+      }
+
+      const checkInBtn = document.querySelector('.btn-primary');
+      const checkOutBtn = document.querySelector('.btn-outline');
+      const checkedInLabel = document.querySelector('.panel p[style*="var(--success)"]');
+      
+      if (!checkInBtn || !checkOutBtn || !checkedInLabel) return;
+
+      // Initial state
+      checkedInLabel.style.display = 'none';
+      checkOutBtn.disabled = true;
+
+      let currentProjectId = null;
+      let todayAttendance = null;
+
+      try {
+        const projects = await apiFetch('/v1/projects');
+        if (projects.length === 0) {
+          alert('You are not assigned to any project.');
+          checkInBtn.disabled = true;
+          return;
+        }
+        // pick first active project as the default
+        const proj = projects.find(p => p.status === 'active') || projects[0];
+        currentProjectId = proj.id;
+
+        // Fetch attendance to see if checked in today
+        const records = await apiFetch(`/v1/attendance/project/${currentProjectId}`);
+        const todayStr = new Date().toISOString().split('T')[0];
+        
+        todayAttendance = records.find(r => r.user_id === user.id && r.attendance_date === todayStr);
+
+        if (todayAttendance) {
+          checkInBtn.disabled = true;
+          const checkInTime = new Date(todayAttendance.check_in).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+          checkedInLabel.textContent = `✓ Checked in at ${checkInTime}`;
+          checkedInLabel.style.display = 'block';
+
+          if (todayAttendance.check_out) {
+            checkOutBtn.disabled = true;
+            checkOutBtn.innerHTML = '<span class="material-symbols-outlined">done_all</span> Checked Out';
+          } else {
+            checkOutBtn.disabled = false;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to init attendance:', err);
+      }
+
+      checkInBtn.addEventListener('click', async () => {
+        if (!currentProjectId) return;
+        try {
+          checkInBtn.disabled = true;
+          checkInBtn.innerHTML = 'Checking in...';
+
+          const res = await apiFetch('/v1/attendance/check-in', {
+            method: 'POST',
+            body: JSON.stringify({ project_id: currentProjectId, notes: "" })
+          });
+
+          const checkInTime = new Date(res.check_in).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+          checkedInLabel.textContent = `✓ Checked in at ${checkInTime}`;
+          checkedInLabel.style.display = 'block';
+          checkInBtn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Checked In';
+          checkOutBtn.disabled = false;
+          
+        } catch (err) {
+          alert('Error checking in: ' + err.message);
+          checkInBtn.disabled = false;
+          checkInBtn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Check In Now';
+        }
+      });
+
+      checkOutBtn.addEventListener('click', async () => {
+        if (!currentProjectId) return;
+        try {
+          checkOutBtn.disabled = true;
+          checkOutBtn.innerHTML = 'Checking out...';
+
+          const res = await apiFetch('/v1/attendance/check-out', {
+            method: 'POST',
+            body: JSON.stringify({ project_id: currentProjectId, notes: "" })
+          });
+
+          checkOutBtn.innerHTML = '<span class="material-symbols-outlined">exit_to_app</span> Checked Out';
+          alert('Successfully checked out for the day!');
+        } catch (err) {
+          alert('Error checking out: ' + err.message);
+          checkOutBtn.disabled = false;
+          checkOutBtn.innerHTML = '<span class="material-symbols-outlined">exit_to_app</span> Check Out Now';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

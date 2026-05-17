@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create User | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+                <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+                <a href="/admin/project-list.html"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html"><span class="material-symbols-outlined">account_balance</span> Budget Management</a>
+        <a href="/admin/expenses.html"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+                <a href="/admin/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">RK</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Rajesh Kumar</div>
+            <div class="sidebar-user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Create User</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>Create User</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">RK</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in"><h1>Create New User</h1><p>Create users exactly as defined in the SOW with role-based access and login status control.</p></div>
+        <div class="panel animate-in animate-in-delay-1"><div class="panel-header"><span class="panel-title">User Information</span></div><div class="panel-body"><form data-create-user-form><div class="admin-form-grid"><div class="form-group"><label>Full Name</label><input name="name" type="text" class="form-control" placeholder="Enter full name"></div><div class="form-group"><label>Email</label><input name="email" type="email" class="form-control" placeholder="user@company.com"></div><div class="form-group"><label>Password</label><input name="password" type="password" class="form-control" placeholder="Enter password"></div><div class="form-group"><label>Role</label><select name="role" class="form-select"><option value="">Select role</option><option>Project Manager</option><option>Site Engineer</option><option>Client</option></select></div><div class="form-group"><label>Status</label><select name="status" class="form-select"><option>Active</option><option>Inactive</option></select></div></div><div class="form-actions"><button type="submit" class="btn btn-primary"><span class="material-symbols-outlined">person_add</span>Create User</button><button type="reset" class="btn btn-outline">Reset</button></div></form></div></div>
+      </div>
+    </div>
+  </div>
+  <script src="../js/app.js"></script>
+  <script>
+    // Run immediately to ensure we don't miss DOMContentLoaded
+    const initCreateUser = () => {
+      if (!requireAuth(['admin'])) return;
+
+      try {
+        const authUser = getAuthUser();
+        if (authUser && authUser.name) {
+          const initials = authUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          const sidebarName = document.querySelector('.sidebar-user-name');
+          if (sidebarName) sidebarName.textContent = authUser.name;
+          document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar').forEach(el => el.textContent = initials);
+        }
+      } catch (e) {
+        console.warn("Sidebar user render failed", e);
+      }
+
+      const form = document.querySelector('[data-create-user-form]');
+      if (!form) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const btn = form.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = 'Creating...';
+        btn.disabled = true;
+
+        try {
+          const name = form.elements['name'].value.trim();
+          const email = form.elements['email'].value.trim();
+          const password = form.elements['password'].value.trim();
+          const roleDisplay = form.elements['role'].value;
+          const statusDisplay = form.elements['status'].value;
+          
+          if (!name || !email || !password || !roleDisplay) {
+            showToast('Please fill in all required fields', 'warning');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+          }
+
+          const roleApiMap = { 
+            'Project Manager': 'project_manager', 
+            'Site Engineer': 'site_engineer', 
+            'Client': 'client', 
+            'Admin': 'admin' 
+          };
+          const role = roleApiMap[roleDisplay] || roleDisplay.toLowerCase().replace(/ /g, '_');
+
+          const payload = {
+            full_name: name,
+            email: email,
+            password: password,
+            role: role,
+            is_active: statusDisplay === 'Active'
+          };
+
+          await apiFetch('/v1/users', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+
+          showToast('User created successfully!', 'success');
+          setTimeout(() => window.location.href = 'manage-users.html', 1500);
+        } catch (err) {
+          console.error('Failed to create user:', err);
+          showToast(err.message || 'Failed to create user', 'danger');
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCreateUser);
+    } else {
+      initCreateUser();
+    }
+  </script>
+</body>
+</html>

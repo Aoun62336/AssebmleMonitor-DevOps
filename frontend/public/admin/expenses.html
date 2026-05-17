@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense View | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="/js/app.js" defer></script>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+                <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+                <a href="/admin/project-list.html"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html"><span class="material-symbols-outlined">account_balance</span> Budget Management</a>
+        <a href="/admin/expenses.html" class="active"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+                <a href="/admin/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">RK</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Rajesh Kumar</div>
+            <div class="sidebar-user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Expense View</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>Expense View</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">RK</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in">
+          <h1>Expense View</h1>
+          <p>Review and manage all expense records across the portfolio.</p>
+        </div>
+
+        <div class="panel animate-in" style="margin-bottom: 20px;">
+          <div class="panel-body" style="display:flex; align-items:center; gap:16px;">
+            <label for="adminExpenseSelect" style="font-weight:600; color:var(--text);">Select Project:</label>
+            <select id="adminExpenseSelect" class="form-select" style="min-width:300px;">
+              <option value="">Loading projects...</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="expenseEmptyState" style="padding:40px;text-align:center;color:var(--text-muted);">
+          Select a project to view expense records.
+        </div>
+
+        <div id="expenseContent" style="display:none;">
+          <div class="panel animate-in">
+            <div class="panel-header">
+              <span class="panel-title">Expenses</span>
+              <span class="panel-action"><a href="#" style="color:var(--accent)">+ New</a></span>
+            </div>
+            <div class="panel-body" style="padding:0; overflow-x:auto;">
+              <table class="task-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Title / Desc</th>
+                    <th>Category</th>
+                    <th>Vendor</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="expenseTableBody">
+                  <!-- Dynamic rows go here -->
+                </tbody>
+                <tfoot>
+                  <tr style="background:var(--bg); font-weight:600;">
+                    <td colspan="4" style="text-align:right;">Total:</td>
+                    <td id="expenseTotalAmount">₹0</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Delete Expense Confirmation Modal -->
+        <div id="deleteExpenseModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(44, 62, 80, 0.7); z-index:1000; align-items:center; justify-content:center;">
+          <div style="background:var(--card); border-radius:12px; width:90%; max-width:400px; padding:32px; text-align:center; box-shadow:var(--shadow-xl);">
+            <span class="material-symbols-outlined" style="font-size:48px;color:var(--accent);">receipt_long</span>
+            <h3 style="margin:16px 0 8px;color:var(--primary);">Delete Expense?</h3>
+            <p style="color:var(--text-muted);margin-bottom:24px;">This expense record will be permanently deleted.</p>
+            <div style="display:flex;gap:12px;justify-content:center;">
+              <button id="cancelDeleteExpense" class="btn btn-outline">Cancel</button>
+              <button id="confirmDeleteExpense" class="btn btn-primary">Yes, Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          requireAuth(['admin']);
+          const user = getAuthUser();
+          if (user) {
+            const nameEl = document.querySelector('.sidebar-user-name');
+            const roleEl = document.querySelector('.sidebar-user-role');
+            const avatarEls = document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar');
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role.replace('_', ' ').toUpperCase();
+            if (avatarEls.length > 0) {
+              const initials = user.name.substring(0, 2).toUpperCase();
+              avatarEls.forEach(el => el.textContent = initials);
+            }
+          }
+
+          const projectSelect = document.getElementById('adminExpenseSelect');
+          const content = document.getElementById('expenseContent');
+          const emptyState = document.getElementById('expenseEmptyState');
+          const tableBody = document.getElementById('expenseTableBody');
+          const totalAmountEl = document.getElementById('expenseTotalAmount');
+
+          let currentExpenses = [];
+
+          try {
+            const projects = await apiFetch('/v1/projects');
+            projectSelect.innerHTML = '<option value="">Select a Project</option>';
+            projects.forEach(p => {
+              const opt = document.createElement('option');
+              opt.value = p.id;
+              opt.textContent = p.name;
+              projectSelect.appendChild(opt);
+            });
+
+            projectSelect.addEventListener('change', async (e) => {
+              if (e.target.value) {
+                await loadExpenses(e.target.value);
+              } else {
+                content.style.display = 'none';
+                emptyState.style.display = 'block';
+              }
+            });
+          } catch (err) {
+            console.error(err);
+            showToast('Failed to load projects', 'danger');
+            projectSelect.innerHTML = '<option value="">Error loading</option>';
+          }
+
+          async function loadExpenses(projectId) {
+            try {
+              content.style.display = 'none';
+              emptyState.style.display = 'block';
+              emptyState.textContent = 'Loading expenses...';
+
+              currentExpenses = await apiFetch(`/v1/expenses/project/${projectId}`);
+              renderExpenses();
+
+              emptyState.style.display = 'none';
+              content.style.display = 'block';
+            } catch (err) {
+              console.error(err);
+              showToast('Failed to load expenses', 'danger');
+              emptyState.textContent = 'Error loading expenses.';
+            }
+          }
+
+          function renderExpenses() {
+            tableBody.innerHTML = '';
+            let total = 0;
+
+            if (currentExpenses.length === 0) {
+              tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted)">No expenses recorded for this project.</td></tr>';
+              totalAmountEl.textContent = '₹0';
+              return;
+            }
+
+            currentExpenses.forEach(exp => {
+              total += Number(exp.amount || 0);
+
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td>${formatShortDate(exp.expense_date)}</td>
+                <td><strong>${exp.title || '--'}</strong>${exp.description ? `<div style="font-size:12px;color:var(--text-muted);">${exp.description}</div>` : ''}</td>
+                <td><span class="category-badge" style="background:var(--border-color);">${exp.category || 'Misc'}</span></td>
+                <td>${exp.vendor || '--'}</td>
+                <td>₹${Number(exp.amount || 0).toLocaleString('en-IN')}</td>
+              `;
+              tableBody.appendChild(tr);
+            });
+
+            totalAmountEl.innerHTML = `<strong>₹${total.toLocaleString('en-IN')}</strong>`;
+          }
+
+          window.approveExpense = async function(id) {
+            try {
+              await apiFetch(`/v1/expenses/${id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: 'approved' })
+              });
+              
+              showToast('Expense approved successfully', 'success');
+              
+              // Update local state
+              const exp = currentExpenses.find(e => String(e.id) === String(id));
+              if (exp) exp.status = 'approved';
+              renderExpenses();
+            } catch (err) {
+              console.error(err);
+              showToast('Failed to approve expense: ' + err.message, 'danger');
+            }
+          };
+
+          let pendingDeleteExpenseId = null;
+          const deleteExpModal = document.getElementById('deleteExpenseModal');
+          document.getElementById('cancelDeleteExpense').addEventListener('click', () => {
+            deleteExpModal.style.display = 'none'; pendingDeleteExpenseId = null;
+          });
+          deleteExpModal.addEventListener('click', e => {
+            if (e.target === deleteExpModal) { deleteExpModal.style.display = 'none'; pendingDeleteExpenseId = null; }
+          });
+          document.getElementById('confirmDeleteExpense').addEventListener('click', async () => {
+            if (!pendingDeleteExpenseId) return;
+            const id = pendingDeleteExpenseId;
+            deleteExpModal.style.display = 'none'; pendingDeleteExpenseId = null;
+            try {
+              await apiFetch(`/v1/expenses/${id}`, { method: 'DELETE' });
+              showToast('Expense deleted', 'success');
+              currentExpenses = currentExpenses.filter(e => e.id !== id);
+              renderExpenses();
+            } catch (err) {
+              showToast('Failed to delete expense', 'danger');
+            }
+          });
+
+          window.deleteExpense = function(id) {
+            pendingDeleteExpenseId = id;
+            deleteExpModal.style.display = 'flex';
+          };
+        });
+        </script>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

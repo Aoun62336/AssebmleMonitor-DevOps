@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Logs | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+        <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+        <a href="/admin/project-list.html"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html"><span class="material-symbols-outlined">account_balance</span> Budget Management</a>
+        <a href="/admin/expenses.html"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+        <a href="/admin/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <a href="/admin/system-logs.html" class="active"><span class="material-symbols-outlined">history</span> System Logs</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">RK</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Rajesh Kumar</div>
+            <div class="sidebar-user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">System Logs</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>System Logs</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">RK</div>
+        </div>
+      </header>
+      <div class="dash-content">
+        <div class="dash-welcome animate-in">
+          <h1>System Logs</h1>
+          <p>Comprehensive historical view of all system activities across the enterprise.</p>
+        </div>
+
+        <div class="panel animate-in">
+          <div class="panel-header">
+            <span class="panel-title">Activity Feed</span>
+            <button class="btn btn-outline" onclick="loadLogs()" style="padding:4px 12px; font-size:13px;">Refresh</button>
+          </div>
+          <div class="panel-body">
+            <div class="activity-feed" id="fullSystemLogsFeed" style="max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 12px;">
+              <div style="text-align:center;padding:40px;color:var(--text-muted)">Loading all logs...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!requireAuth(['admin'])) return;
+
+      const user = getAuthUser();
+      if (user && user.name) {
+        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const sidebarName = document.querySelector('.sidebar-user-name');
+        if (sidebarName) sidebarName.textContent = user.name;
+        document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar').forEach(el => el.textContent = initials);
+      }
+
+      window.loadLogs = async function() {
+        const feed = document.getElementById('fullSystemLogsFeed');
+        feed.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">Loading logs...</div>';
+        
+        try {
+          // Fetch up to 1000 logs for the dedicated page
+          const activities = await apiFetch('/v1/analytics/recent-activity?limit=1000');
+          if (!activities || activities.length === 0) {
+            feed.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">No activity found in the system yet.</div>';
+            return;
+          }
+          
+          feed.innerHTML = activities.map(a => `
+            <div class="activity-item" style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+              <div class="activity-dot ${a.color || 'blue'}"></div>
+              <div class="activity-content" style="width: 100%; display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <h4 style="margin: 0 0 4px 0; font-size: 15px;">${a.title}</h4>
+                  <p style="margin: 0; color: var(--text-muted); font-size: 14px;">${a.description}</p>
+                </div>
+                <span class="activity-time" style="white-space: nowrap; font-size: 13px; color: var(--text-light); background: var(--bg-hover); padding: 2px 8px; border-radius: 12px;">${a.time_ago}</span>
+              </div>
+            </div>`).join('');
+            
+        } catch (err) {
+          console.error('Failed to load logs:', err);
+          feed.innerHTML = '<div style="text-align:center;padding:40px;color:var(--danger)">Failed to load system logs. Please try again.</div>';
+        }
+      };
+      
+      loadLogs();
+    });
+  </script>
+</body>
+</html>

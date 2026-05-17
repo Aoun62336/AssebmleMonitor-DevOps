@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/admin/index.html" class="active"><span class="material-symbols-outlined">dashboard</span> Admin Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">User Management</div>
+        <a href="/admin/manage-users.html"><span class="material-symbols-outlined">group</span> Manage Users</a>
+        <div class="sidebar-section-label" style="padding-left:0">Projects</div>
+        <a href="/admin/project-list.html"><span class="material-symbols-outlined">list_alt</span> Project List</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/admin/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <a href="/admin/budget.html"><span class="material-symbols-outlined">account_balance</span> Budget Management</a>
+        <a href="/admin/expenses.html"><span class="material-symbols-outlined">payments</span> Expense View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media</div>
+        <a href="/admin/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <div class="sidebar-section-label" style="padding-left:0">Insights</div>
+        <a href="/admin/analytics.html"><span class="material-symbols-outlined">analytics</span> Full Analytics</a>
+        <a href="/admin/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">RK</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Rajesh Kumar</div>
+            <div class="sidebar-user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Admin Dashboard</div>
+            <div class="topbar-breadcrumb">Admin &gt; <span>Dashboard</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar">RK</div>
+        </div>
+      </header>
+      <div class="dash-content">
+
+        <div class="dash-welcome animate-in"><h1>Welcome back, Rajesh 👋</h1><p>Here's a snapshot of your enterprise construction portfolio today.</p></div>
+        <div class="stats-grid">
+          <div class="stat-card animate-in animate-in-delay-1"><div class="stat-card-header"><div><div class="stat-card-label">Total Projects</div><div class="stat-card-value" id="statTotalProjects">—</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">architecture</span></div></div><div class="stat-card-change up"><span class="material-symbols-outlined" style="font-size:14px">trending_up</span> <span id="statProjectChange">Loading...</span></div></div>
+          <div class="stat-card animate-in animate-in-delay-2"><div class="stat-card-header"><div><div class="stat-card-label">Completed Projects</div><div class="stat-card-value" id="statTotalUsers">—</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">check_circle</span></div></div><div class="stat-card-change up"><span class="material-symbols-outlined" style="font-size:14px">trending_up</span> 100% progress</div></div>
+          <div class="stat-card animate-in animate-in-delay-3"><div class="stat-card-header"><div><div class="stat-card-label">Budget Utilized</div><div class="stat-card-value" id="statBudgetUsed">—</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">account_balance_wallet</span></div></div><div class="stat-card-change up"><span class="material-symbols-outlined" style="font-size:14px">trending_up</span> Total spent across projects</div></div>
+          <div class="stat-card animate-in animate-in-delay-4"><div class="stat-card-header"><div><div class="stat-card-label">Active Projects</div><div class="stat-card-value" id="statActiveProjects">—</div></div><div class="stat-card-icon"><span class="material-symbols-outlined">play_circle</span></div></div><div class="stat-card-change up"><span class="material-symbols-outlined" style="font-size:14px">trending_up</span> Currently running</div></div>
+        </div>
+
+        <div class="dash-grid">
+          <!-- Enterprise Progress Flow -->
+          <div class="panel animate-in">
+            <div class="panel-header">
+              <span class="panel-title">Enterprise Progress Flow</span>
+              <a href="/admin/project-list.html" class="panel-action" style="cursor:pointer; color:var(--primary); text-decoration:none;">View Details →</a>
+            </div>
+            <div class="panel-body" id="enterpriseProgressBody" style="position: relative; height: 350px;">
+              <canvas id="enterpriseChart"></canvas>
+            </div>
+          </div>
+
+          <!-- System Logs -->
+          <div class="panel animate-in animate-in-delay-1">
+            <div class="panel-header">
+              <span class="panel-title">System Logs</span>
+              <a href="/admin/system-logs.html" class="panel-action" style="cursor:pointer; text-decoration:none; color:var(--primary);">View All →</a>
+            </div>
+            <div class="panel-body">
+              <div class="activity-feed" id="systemLogsFeed">
+                <div class="activity-item">
+                  <div class="activity-dot orange"></div>
+                  <div class="activity-content"><h4>Loading logs...</h4></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-grid-equal">
+          <div class="panel animate-in animate-in-delay-1"><div class="panel-header"><span class="panel-title">Blueprint Status</span></div><div class="panel-body" id="blueprintStatusBody"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Auth
+      if (!requireAuth(['admin'])) return;
+
+      // 2. User info
+      const user = getAuthUser();
+      if (user && user.name) {
+        const firstName = user.name.split(' ')[0];
+        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const welcomeEl = document.querySelector('.dash-welcome h1');
+        if (welcomeEl) welcomeEl.textContent = `Welcome back, ${firstName} 👋`;
+        const sidebarName = document.querySelector('.sidebar-user-name');
+        if (sidebarName) sidebarName.textContent = user.name;
+        document.querySelectorAll('.sidebar-user-avatar, .topbar-avatar').forEach(el => el.textContent = initials);
+      }
+
+      // 3. Admin overview stats
+      try {
+        const data = await apiFetch('/v1/analytics/admin-overview');
+        document.getElementById('statTotalProjects').textContent = data.total_projects ?? '—';
+        document.getElementById('statTotalUsers').textContent = data.total_users ?? '—';
+        document.getElementById('statActiveProjects').textContent = data.active_projects ?? '—';
+        const spent = data.total_platform_spent || 0;
+        document.getElementById('statBudgetUsed').textContent = spent >= 10000000
+          ? `₹${(spent/10000000).toFixed(2)} Cr`
+          : `₹${spent.toLocaleString('en-IN')}`;
+        document.getElementById('statProjectChange').textContent = `${data.active_projects || 0} active projects`;
+      } catch (err) {
+        console.error('Failed to load admin overview:', err);
+      }
+
+      // 4. Enterprise Progress Flow - real graph
+      async function loadEnterpriseProgress() {
+        const body = document.getElementById('enterpriseProgressBody');
+        try {
+          const overviews = await apiFetch('/v1/analytics/overview');
+          if (!overviews || overviews.length === 0) {
+            body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted)">No project data available.</div>';
+            return;
+          }
+          const labels = overviews.map(o => o.project_name || o.name);
+          const dataPoints = overviews.map(o => Math.round(o.progress_pct || 0));
+          const bgColors = overviews.map(o => {
+            const pct = o.progress_pct || 0;
+            if (pct >= 80) return 'rgba(39, 174, 96, 0.8)'; // Green
+            if (pct >= 40) return 'rgba(52, 152, 219, 0.8)'; // Blue
+            return 'rgba(230, 126, 34, 0.8)'; // Orange
+          });
+
+          const ctx = document.getElementById('enterpriseChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'Project Progress (%)',
+                data: dataPoints,
+                backgroundColor: bgColors,
+                borderRadius: 4,
+                borderWidth: 0
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      const o = overviews[context.dataIndex];
+                      return ` ${context.parsed.y}% - ${(o.task_stats?.completed || 0)} of ${(o.task_stats?.total || 0)} tasks`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  max: 100,
+                  ticks: {
+                    callback: function(value) {
+                      return value + '%';
+                    }
+                  }
+                }
+              }
+            }
+          });
+        } catch (err) {
+          console.error(err);
+          const container = document.getElementById('enterpriseProgressBody');
+          if (container) {
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--danger)">Failed to load progress graph.</div>';
+          }
+        }
+      }
+      loadEnterpriseProgress();
+
+      // 5. System Logs - show 5 latest
+      let allLogs = [];
+      async function loadSystemLogs() {
+        const feed = document.getElementById('systemLogsFeed');
+        try {
+          const activities = await apiFetch('/v1/analytics/recent-activity');
+          allLogs = activities || [];
+          renderLogsFeed(feed, allLogs.slice(0, 5));
+        } catch (err) {
+          feed.innerHTML = '<div style="color:var(--text-muted);padding:8px;">Could not load system logs.</div>';
+        }
+      }
+
+      function renderLogsFeed(container, logs) {
+        if (!logs || logs.length === 0) {
+          container.innerHTML = '<div style="color:var(--text-muted);padding:8px;">No recent activity.</div>';
+          return;
+        }
+        container.innerHTML = logs.map(a => `
+          <div class="activity-item">
+            <div class="activity-dot ${a.color || 'blue'}"></div>
+            <div class="activity-content">
+              <h4>${a.title}</h4>
+              <p>${a.description}</p>
+              <span class="activity-time">${a.time_ago}</span>
+            </div>
+          </div>`).join('');
+      }
+
+      loadSystemLogs();
+
+      // View All button redirects to system logs page
+      document.getElementById('viewAllLogsBtn').addEventListener('click', () => {
+        window.location.href = '/admin/system-logs.html';
+      });
+
+      // 6. Blueprint Status (project progress bars)
+      try {
+        const projects = await apiFetch('/v1/analytics/overview');
+        const blueprintBody = document.getElementById('blueprintStatusBody');
+        if (blueprintBody && Array.isArray(projects)) {
+          blueprintBody.innerHTML = '';
+          projects.forEach(project => {
+            const progress = typeof project.progress_pct === 'number' ? project.progress_pct : 0;
+            let colorClass = '';
+            if (progress >= 80) colorClass = ' green';
+            else if (progress >= 40) colorClass = ' blue';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'progress-bar-wrapper';
+            wrapper.innerHTML = `
+              <div class="progress-label">
+                <span>${project.name || project.project_name}</span>
+                <span>${progress}%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill${colorClass}" style="width:${progress}%"></div>
+              </div>
+            `;
+            blueprintBody.appendChild(wrapper);
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load blueprint status:', err);
+      }
+    });
+  </script>
+</body>
+</html>

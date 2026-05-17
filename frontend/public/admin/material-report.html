@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Material Report | AssembleMonitor</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" alt="AssembleMonitor">
+        <span class="sidebar-brand">Assemble<span>Monitor</span></span>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="/pm/index.html"><span class="material-symbols-outlined">dashboard</span> PM Dashboard</a>
+        <div class="sidebar-section-label" style="padding-left:0">Planning</div>
+        <a href="/pm/create-phase.html"><span class="material-symbols-outlined">layers</span> Create Phase</a>
+        <a href="/pm/create-task.html"><span class="material-symbols-outlined">add_task</span> Create Task</a>
+        <a href="/pm/task-management.html"><span class="material-symbols-outlined">assignment</span> Task Management</a>
+        <div class="sidebar-section-label" style="padding-left:0">Materials</div>
+        <a href="/pm/material-master.html"><span class="material-symbols-outlined">inventory_2</span> Material Master</a>
+        <a href="/pm/material-stock.html"><span class="material-symbols-outlined">receipt_long</span> Material Stock Entry</a>
+        <a href="/pm/material-report.html" class="active"><span class="material-symbols-outlined">description</span> Material Report</a>
+        <div class="sidebar-section-label" style="padding-left:0">Finance</div>
+        <a href="/pm/expense-list.html"><span class="material-symbols-outlined">payments</span> Expense List</a>
+        <a href="/pm/budget-summary.html"><span class="material-symbols-outlined">account_balance</span> Budget Summary</a>
+        <div class="sidebar-section-label" style="padding-left:0">Operations</div>
+        <a href="/pm/attendance.html"><span class="material-symbols-outlined">fact_check</span> Attendance View</a>
+        <div class="sidebar-section-label" style="padding-left:0">Media & Insights</div>
+        <a href="/pm/photo-upload.html"><span class="material-symbols-outlined">add_a_photo</span> Photo Upload</a>
+        <a href="/pm/photo-gallery.html"><span class="material-symbols-outlined">photo_library</span> Photo Gallery</a>
+        <a href="/pm/analytics.html"><span class="material-symbols-outlined">analytics</span> Analytics Dashboard</a>
+        <a href="/pm/gantt.html"><span class="material-symbols-outlined">view_timeline</span> Gantt Chart</a>
+        <div class="divider"></div>
+        <a href="#" class="logout-btn"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar" id="sidebarAvatar">--</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="sidebarName">Loading...</div>
+            <div class="sidebar-user-role" id="sidebarRole">--</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="topbar-icon-btn" style="display:none"><span class="material-symbols-outlined">menu</span></button>
+          <div>
+            <div class="topbar-title">Material Report</div>
+            <div class="topbar-breadcrumb">PM &gt; <span>Material Report</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">search</span></button>
+          <button class="topbar-icon-btn"><span class="material-symbols-outlined">notifications</span><span class="topbar-badge"></span></button>
+          <div class="topbar-avatar" id="topbarAvatar">--</div>
+        </div>
+      </header>
+      <div class="dash-content">
+        <div class="dash-welcome animate-in">
+          <h1>Material Report</h1>
+          <p>Consumption and procurement analytics.</p>
+        </div>
+
+        <div class="panel animate-in" style="margin-bottom:24px">
+          <div class="panel-body">
+            <div class="form-group" style="margin:0">
+              <label>Select Project</label>
+              <select id="reportProjectSelect" class="form-select">
+                <option value="">-- Select Project --</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel animate-in">
+          <div class="panel-header">
+            <span class="panel-title">Usage & Cost Summary</span>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <table class="task-table" id="reportTable">
+              <thead>
+                <tr>
+                  <th>Material Name</th>
+                  <th>Unit</th>
+                  <th>Received</th>
+                  <th>Used</th>
+                  <th>Cost Incurred</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="5" style="text-align:center; padding:24px;">Select a project to view report</td></tr>
+              </tbody>
+              <tfoot id="reportSummaryFoot" style="font-weight:bold; background:var(--bg);">
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        requireAuth(['project_manager', 'admin']);
+        
+        const user = getAuthUser();
+        if (user) {
+          document.getElementById('sidebarName').textContent = user.name;
+          document.getElementById('sidebarRole').textContent = user.role.replace('_', ' ').toUpperCase();
+          const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          document.getElementById('sidebarAvatar').textContent = initials;
+          document.getElementById('topbarAvatar').textContent = initials;
+        }
+
+        // Fetch projects
+        const projects = await apiFetch('/v1/projects');
+        const projectSelect = document.getElementById('reportProjectSelect');
+        projects.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = p.name;
+          projectSelect.appendChild(opt);
+        });
+
+        const tbody = document.querySelector('#reportTable tbody');
+        const tfoot = document.getElementById('reportSummaryFoot');
+
+        const loadReport = async () => {
+          const projectId = projectSelect.value;
+          
+          if (!projectId) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px;">Select a project to view report</td></tr>';
+            tfoot.innerHTML = '';
+            return;
+          }
+
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:24px;">Loading report...</td></tr>';
+          tfoot.innerHTML = '';
+          
+          try {
+            const reportData = await apiFetch(`/v1/material-usage/report/project/${projectId}`);
+            
+            if (!reportData || reportData.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:24px;">No material data found for this project.</td></tr>';
+              return;
+            }
+
+            tbody.innerHTML = '';
+            let totalCost = 0;
+
+            reportData.forEach(item => {
+              const tr = document.createElement('tr');
+              totalCost += Number(item.cost_incurred);
+
+              tr.innerHTML = `
+                <td><strong>${item.material_name}</strong></td>
+                <td>${item.unit}</td>
+                <td>${Number(item.total_received).toFixed(2)}</td>
+                <td>${Number(item.total_used).toFixed(2)}</td>
+                <td>₹${Number(item.cost_incurred).toLocaleString('en-IN')}</td>
+              `;
+              tbody.appendChild(tr);
+            });
+
+            // Summary Row
+            let costLakhs = (totalCost / 100000).toFixed(2);
+            tfoot.innerHTML = `
+              <tr>
+                <td colspan="4" style="text-align:right;"><strong>Total Cost Incurred:</strong></td>
+                <td><strong>₹${costLakhs} Lakh</strong></td>
+              </tr>
+            `;
+
+          } catch (err) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:24px; color:red;">Failed to load report</td></tr>';
+            showToast(err.message || 'Failed to load report', 'danger');
+          }
+        };
+
+        projectSelect.addEventListener('change', loadReport);
+
+      } catch (err) {
+        showToast(err.message || 'Failed to initialize page', 'danger');
+      }
+    });
+  </script>
+</body>
+</html>
